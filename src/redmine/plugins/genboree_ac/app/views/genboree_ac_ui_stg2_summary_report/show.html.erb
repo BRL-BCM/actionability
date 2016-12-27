@@ -1,0 +1,80 @@
+<%
+  renderError = false
+  if(@kbDoc)
+    modelHash = { :docModel => @docModel, :refModel => @refModel }
+    opts = { :trim => @trim, :detailed => @detailed, :twoCharNewline => '<div class="pgap">&nbsp;</div>'  }
+    begin
+      # Core doc content via templates
+      templater = GenboreeAcTemplaters::Stg2SummaryReportTemplater.new(modelHash, opts)
+      docHtml = templater.docHtml(@kbDoc)
+      # Discover ref_%ID% strings in the order they appear in the doc
+      refIdsInDocAppearanceOrder = docHtml.scan( /ref_%([^%]+)%/ )
+      # Non-redundant order
+      refIdsInDocAppearanceOrder.flatten!
+      refIdsInDocAppearanceOrder.uniq!
+
+      # BEFORE RENDERING the References/Biolography section, sort @refDocs by their index in refIdsInDocAppearanceOrder
+      @refDocs.sort! { |aa, bb|
+        aaIdx = refIdsInDocAppearanceOrder.index( aa.getRootPropVal() )
+        bbIdx = refIdsInDocAppearanceOrder.index( bb.getRootPropVal() )
+        aaIdx <=> bbIdx
+      }
+
+      # Produce html for @refDocs using templates
+      refHtmls = templater.refsHtml(@refDocs)
+
+      # Replace all ref_%ID% place holders in html with ref_IDX
+      [docHtml, refHtmls].each { |html|
+        html.gsub!(/(ref_|ref_displ_)%([^%]+)%/) { |mm|
+          idx = refIdsInDocAppearanceOrder.index( $2 )
+          idx += 1
+          "#{$1 == 'ref_' ? "ref_#{idx}" : idx}"
+        }
+      }
+
+      renderError = false
+    rescue => err
+      renderError = true
+      docHtml = %Q^<strong>ERROR:</strong> Rendering the Actionability document with id <strong>'#{@docIdentifier.to_s}'</strong> failed. Cannot it display it here.<br>Possibly there is no <strong>'#{@docIdentifier.to_s}'</strong> in the database, or has content incompatible with the renderer.^
+      refHtmls = []
+      $stderr.debugPuts(__FILE__, __method__, "ERROR", "Exception rendering doc using templates:\n  Error class: #{err.class}\n  Error message:  #{err.message.inspect}\n  Error trace:\n#{err.backtrace.join("\n")}\n\n")
+    end
+  else
+    renderError = true
+    refHtmls = []
+    docHtml = %Q^<strong>ERROR:</strong> #{@viewMsg or "Failed to load document data, please contact an Administrator to help track down cause."}^
+  end
+%>
+<% content_for :header_tags do %>
+    <script type="text/javascript">
+      var kbMount = "<%= @kbMount %>" ;
+      /* This is set in the controller. */
+      var projectId = '<%= @projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+
+      // TEST/EXPLORE: User permission map
+      <%# = @userPermsJS %>
+    </script>
+
+    <%= stylesheet_link_tag 'stg2SummRpt', :media => 'all', :plugin => 'genboree_ac' %>
+    <%= javascript_include_tag 'helpers', :plugin => 'genboree_ac' %>
+<% end %>
+
+<!-- PAGE -->
+<div id="page">
+  <!-- DOC RENDER -->
+  <div id="doc">
+    <!-- DOC CONTENT -->
+    <% if(renderError) %>
+      <%= render :partial => "shared/bsAlert", :locals => { :msgHtml => docHtml }, :object => { :type => 'danger', :classes => 'flashMsg' } %>
+    <% else %>
+      <%= docHtml.html_safe %>
+      <!-- REFERENCES CONTENT -->
+      <% if(refHtmls and !refHtmls.empty?) %>
+          <div id="references" class="references">
+            <span class="lvl2 title col-xs-12 text-center">Reference List</span>
+            <%= refHtmls.html_safe %>
+          </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

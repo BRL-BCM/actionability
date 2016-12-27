@@ -1,0 +1,124 @@
+#mainContainerPanelDiv {
+  width: 90%;
+  margin: auto;
+}
+.entry-title {
+  font-size: 18px;
+  font-weight : bold ;
+  color: #5fa2dd;
+  text-decoration: underline;
+  padding-left: 2%;
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif;
+  padding-bottom: 6px;
+  white-space: normal ;
+}
+.titleContext {
+  padding-left: 2%;
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif;
+  font-size: 15px;
+  white-space: nowrap;
+}
+span.entry-label{ 
+  font-weight : bold ;
+}
+
+
+.linkbutton {
+  background-color: #5fa2dd;
+  color: white ;
+  padding: 10px 10px 10px 10px;
+  border-top: 1px solid #DCE6F5;
+  border-right: 1px solid #DCE6F5;
+  border-bottom: 1px solid #DCE6F5;
+  border-left: 1px solid #DCE6F5;
+  float: right ;
+  cursor: pointer ;
+  font-size: 150% ;
+}
+
+
+.info {
+  background-color: #919191;
+  color: white ;
+  padding: 10px 10px 10px 10px;
+  border-top: 1px solid #DCE6F5;
+  border-right: 1px solid #DCE6F5;
+  border-bottom: 1px solid #DCE6F5;
+  border-left: 1px solid #DCE6F5;
+  font-size: 150% ;
+}
+
+
+.linkbutton-hidden {
+  visibility: hidden ;
+  background-color: #5fa2dd;
+  color: white ;
+  padding: 10px 10px 10px 10px;
+  border-top: 1px solid #DCE6F5;
+  border-right: 1px solid #DCE6F5;
+  border-bottom: 1px solid #DCE6F5;
+  border-left: 1px solid #DCE6F5;
+  float: right ;
+
+}
+
+.linkbutton.stg1RuleOutRpt {
+  line-height: 111.5% ;
+}
+
+.linkbutton.stg2SummaryRpt {
+  line-height: 111.5% ;
+}
+
+.searchEmpty {
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif,FontAwesome;
+  font-size: 15px ;
+}
+.search-trigger:after {
+  content: "\f002";
+  color: #606060 ;
+  padding-right: 20px ;
+  padding: 10px 10px 10px 10px;
+  border-top: 1px solid #DCE6F5;
+  border-right: 1px solid #DCE6F5;
+  border-bottom: 1px solid #DCE6F5;
+  border-left: 1px solid #DCE6F5;
+  background-color: #eeeeee;
+}
+.search-trigger:before {
+    	content: "";
+    	color: white ;
+}
+.search-trigger:hover {
+   color: #5fa2dd ; 
+}
+
+.iconBtn {
+    float: right;
+    color: white;
+    font-size: 22px;
+    margin: -5px 0px 5px 5px;
+    padding: 5px 0px 5px 0px;
+    cursor: pointer ;
+}
+.iconBtn a {
+  color: white !important ;
+}
+
+.new-column
+{
+    background-color: #EBFFE0 ;
+}
+
+.disease-gene .x-grid-empty {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+}
+.grid-data-empty {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+} 

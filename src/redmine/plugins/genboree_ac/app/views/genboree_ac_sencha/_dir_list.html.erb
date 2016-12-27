@@ -1,0 +1,16 @@
+
+<span class="genboree_ac list_title">Contents of: <span class="genboree_ac list_entity"><%= @contentDirRsrcPath %></span></span>
+<div class="autoscroll">
+  <table class="list entries genboree_ac" id="browser">
+  <thead>
+    <tr id="root">
+      <th><%= l(:gbac_label_gb_filedir_name) %></th>
+      <th><%= l(:gbac_label_gb_filedir_size) %></th>
+      <th><%= l(:gbac_label_gb_filedir_updated) %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render :partial => 'dir_list_content' %>
+  </tbody>
+  </table>
+</div>

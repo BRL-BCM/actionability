@@ -1,0 +1,26 @@
+{
+  "rsrc" : {
+    "pathBase" : "/REST-ext/clingen/actionability/infoButton"
+  },
+  "records" : {
+    "host" : "localhost",
+    "grp"  : "actionability",
+    "kb"   : "actionability",
+    "coll" : "combined_model",
+    "login" : "genbadmin"
+  },
+  "template" : {
+    "staticInfo" : {
+      "feed.xmlBase": "http://__GENBOREE_actionabilityFQDN__/redmine/projects/actionability_release/genboree_ac/",
+      "feed.title": "ClinGen Actionability Work-group",
+      "feed.subtitle": "(Actionability doc lookup results)",
+      "feed.author" : "",
+      "feed.author.name": "ClinGen Actionability Work-group",
+      "feed.author.uri": "http://__GENBOREE_actionabilityFQDN__/"
+    },
+    "categories" : {
+      "OMIM" : { "term" : "2.16.840.1.113883.6.174" },
+      "HGNC" : { "term" : "2.16.840.1.113883.6.281" }
+    }
+  }
+}

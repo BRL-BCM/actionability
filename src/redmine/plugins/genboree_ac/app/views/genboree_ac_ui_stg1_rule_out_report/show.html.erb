@@ -1,0 +1,46 @@
+<%
+  renderError = false
+  if(@kbDoc)
+    modelHash = { :docModel => @docModel }
+    opts = { :trim => @trim, :detailed => @detailed }
+    begin
+      # Core doc content via templates
+      templater = GenboreeAcTemplaters::Stg1RuleoutReportTemplater.new(modelHash, opts)
+      docHtml = templater.docHtml(@kbDoc)
+      renderError = false
+    rescue => err
+      renderError = true
+      docHtml = %Q^<strong>ERROR:</strong> Rendering the Actionability document with id <strong>'#{@docIdentifier.to_s}'</strong> failed. Cannot it display it here.<br>Possibly there is no <strong>'#{@docIdentifier.to_s}'</strong> in the database, or has content incompatible with the renderer.</span>^
+      $stderr.debugPuts(__FILE__, __method__, "ERROR", "Exception rendering doc using templates:\n  Error class: #{err.class}\n  Error message:  #{err.message.inspect}\n  Error trace:\n#{err.backtrace.join("\n")}\n\n")
+    end
+  else
+    renderError = true
+    docHtml = %Q^<strong>ERROR:</strong> #{@viewMsg or "Failed to load document data, please contact an Administrator to help track down cause."}^
+  end
+%>
+<% content_for :header_tags do %>
+    <script type="text/javascript">
+      var kbMount = "<%= @kbMount %>" ;
+      /* This is set in the controller. */
+      var projectId = '<%= @projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+
+      // TEST/EXPLORE: User permission map
+      <%# = @userPermsJS %>
+    </script>
+
+    <%= stylesheet_link_tag 'stg1RuleOutRpt', :media => 'all', :plugin => 'genboree_ac' %>
+    <%= javascript_include_tag 'helpers', :plugin => 'genboree_ac' %>
+<% end %>
+
+<!-- PAGE -->
+<div id="page">
+  <!-- DOC RENDER -->
+  <div id="doc">
+    <!-- DOC CONTENT -->
+    <% if(renderError) %>
+        <%= render :partial => "shared/bsAlert", :locals => { :msgHtml => docHtml }, :object => { :type => 'danger', :classes => 'flashMsg' } %>
+    <% else %>
+        <%= docHtml.html_safe %>
+    <% end %>
+  </div>
+</div>

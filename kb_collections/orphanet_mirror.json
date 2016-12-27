@@ -1,0 +1,254 @@
+{
+  "domain": "string",
+  "required": true,
+  "name": "Orphanet",
+  "unique": true,
+  "properties": [
+    {
+      "domain": "string",
+      "required": true,
+      "name": "Name",
+      "index": true
+    },
+    {
+      "domain": "url",
+      "name": "Url-Page"
+    },
+    {
+      "domain": "string",
+      "name": "Disorder Type"
+    },
+    {
+      "domain": "[valueless]",
+      "items": [
+        {
+          "domain": "string",
+          "required": true,
+          "name": "Synonym",
+          "unique": true,
+          "identifier": true,
+          "index": true
+        }
+      ],
+      "fixed": true,
+      "name": "Synonyms",
+      "category": true,
+      "item list": true
+    },
+    {
+      "domain": "[valueless]",
+      "items": [
+        {
+          "domain": "string",
+          "required": true,
+          "name": "Sign",
+          "unique": true,
+          "properties": [
+            {
+              "domain": "string",
+              "name": "Frequency"
+            }
+          ],
+          "identifier": true,
+          "index": true
+        }
+      ],
+      "fixed": true,
+      "name": "Clinical Signs",
+      "category": true,
+      "item list": true
+    },
+    {
+      "domain": "[valueless]",
+      "fixed": true,
+      "name": "Epidemiology",
+      "category": true,
+      "properties": [
+        {
+          "domain": "[valueless]",
+          "fixed": true,
+          "name": "Ages of Onset and Death",
+          "category": true,
+          "properties": [
+            {
+              "domain": "[valueless]",
+              "items": [
+                {
+                  "domain": "string",
+                  "required": true,
+                  "name": "Average Age of Death",
+                  "unique": true,
+                  "identifier": true,
+                  "index": true
+                }
+              ],
+              "fixed": true,
+              "name": "Ages of Death",
+              "category": true,
+              "item list": true
+            },
+            {
+              "domain": "[valueless]",
+              "items": [
+                {
+                  "domain": "string",
+                  "required": true,
+                  "name": "Average Age of Onset",
+                  "unique": true,
+                  "identifier": true,
+                  "index": true
+                }
+              ],
+              "fixed": true,
+              "name": "Ages of Onset",
+              "category": true,
+              "item list": true
+            }
+          ]
+        },
+        {
+          "domain": "[valueless]",
+          "items": [
+            {
+              "domain": "string",
+              "required": true,
+              "name": "Prevalence ID",
+              "unique": true,
+              "properties": [
+                {
+                  "domain": "string",
+                  "name": "Prevalence"
+                },
+                {
+                  "domain": "string",
+                  "name": "Geographic"
+                },
+                {
+                  "domain": "string",
+                  "name": "Qualification"
+                },
+                {
+                  "domain": "string",
+                  "name": "Status"
+                },
+                {
+                  "domain": "string",
+                  "name": "Type"
+                }
+              ],
+              "identifier": true,
+              "index": true
+            }
+          ],
+          "fixed": true,
+          "name": "Prevalences",
+          "category": true,
+          "item list": true
+        },
+        {
+          "domain": "[valueless]",
+          "items": [
+            {
+              "domain": "string",
+              "required": true,
+              "name": "Type of Inheritance",
+              "unique": true,
+              "identifier": true,
+              "index": true
+            }
+          ],
+          "fixed": true,
+          "name": "Types of Inheritance",
+          "category": true,
+          "item list": true
+        }
+      ]
+    },
+    {
+      "domain": "[valueless]",
+      "items": [
+        {
+          "domain": "string",
+          "required": true,
+          "name": "Gene",
+          "unique": true,
+          "properties": [
+            {
+              "domain": "string",
+              "name": "Name"
+            },
+            {
+              "domain": "string",
+              "name": "Type"
+            },
+            {
+              "domain": "[valueless]",
+              "items": [
+                {
+                  "domain": "string",
+                  "required": true,
+                  "name": "Synonym",
+                  "unique": true,
+                  "identifier": true,
+                  "index": true
+                }
+              ],
+              "fixed": true,
+              "name": "Synonyms",
+              "category": true,
+              "item list": true
+            },
+            {
+              "domain": "[valueless]",
+              "items": [
+                {
+                  "domain": "string",
+                  "required": true,
+                  "name": "Locus",
+                  "unique": true,
+                  "identifier": true,
+                  "index": true
+                }
+              ],
+              "fixed": true,
+              "name": "Loci",
+              "category": true,
+              "item list": true
+            },
+            {
+              "domain": "[valueless]",
+              "items": [
+                {
+                  "domain": "string",
+                  "required": true,
+                  "name": "Association",
+                  "unique": true,
+                  "properties": [
+                    {
+                      "domain": "string",
+                      "name": "Status"
+                    }
+                  ],
+                  "identifier": true,
+                  "index": true
+                }
+              ],
+              "fixed": true,
+              "name": "Associations",
+              "category": true,
+              "item list": true
+            }
+          ],
+          "identifier": true,
+          "index": true
+        }
+      ],
+      "fixed": true,
+      "name": "Gene Associations",
+      "category": true,
+      "item list": true
+    }
+  ],
+  "identifier": true,
+  "index": true
+}

@@ -1,0 +1,634 @@
+{
+  "name": "Reference",
+  "unique": true,
+  "identifier": true,
+  "domain": "autoID(RF, increment[6],,)",
+  "properties": [
+    {
+      "name": "Category",
+      "domain": "enum(PMID, OMIM, GeneReview, Orphanet, Other)",
+      "required": true,
+      "index": true
+    },
+    {
+      "name": "PMID",
+      "unique": true,
+      "domain": "pmid",
+      "properties": [
+        {
+          "name": "Pubmed URL",
+          "domain": "string"
+        },
+        {
+          "name": "PMCID",
+          "domain": "string"
+        },
+        {
+          "name": "Citation",
+          "domain": "string"
+        },
+        {
+          "name": "Authors",
+          "domain": "string"
+        },
+        {
+          "name": "Article Title",
+          "domain": "string"
+        },
+        {
+          "name": "Journal Title",
+          "domain": "string"
+        },
+        {
+          "name": "Journal Abbrv",
+          "domain": "string"
+        },
+        {
+          "name": "Journal Ref",
+          "domain": "string"
+        },
+        {
+          "name": "Publication Date",
+          "domain": "string"
+        },
+        {
+          "name": "Volume",
+          "domain": "string"
+        },
+        {
+          "name": "Issue",
+          "domain": "string"
+        },
+        {
+          "name": "Pages",
+          "domain": "string"
+        },
+        {
+          "name": "Location Id",
+          "domain": "string"
+        },
+        {
+          "name": "Abstract",
+          "domain": "string"
+        },
+        {
+          "name": "DOI",
+          "domain": "string"
+        },
+        {
+          "name": "DOI Publication URL",
+          "domain": "string"
+        },
+        {
+          "name": "DOI Metadata URL",
+          "domain": "string"
+        },
+        {
+          "name": "Mesh Keywords",
+          "domain": "string"
+        },
+        {
+          "name": "Ontology Terms",
+          "domain": "string"
+        },
+        {
+          "name": "Grants",
+          "domain": "string"
+        }
+      ],
+      "index": true
+    },
+    {
+      "name": "OMIM",
+      "unique": true,
+      "domain": "omim",
+      "properties": [
+        {
+          "name": "Title",
+          "domain": "string"
+        },
+        {
+          "name": "Other Titles",
+          "domain": "string"
+        },
+        {
+          "name": "Text",
+          "domain": "string"
+        },
+        {
+          "name": "Date Updated",
+          "domain": "string"
+        },
+        {
+          "name": "Date Created",
+          "domain": "string"
+        },
+        {
+          "name": "References",
+          "domain": "string"
+        },
+        {
+          "name": "Animal Model",
+          "domain": "string"
+        },
+        {
+          "name": "Biochemical Features",
+          "domain": "string"
+        },
+        {
+          "name": "Clinical Features",
+          "domain": "string"
+        },
+        {
+          "name": "Clinical Management",
+          "domain": "string"
+        },
+        {
+          "name": "Cloning",
+          "domain": "string"
+        },
+        {
+          "name": "Cytogenetics",
+          "domain": "string"
+        },
+        {
+          "name": "Description",
+          "domain": "string"
+        },
+        {
+          "name": "Diagnosis",
+          "domain": "string"
+        },
+        {
+          "name": "Evolution",
+          "domain": "string"
+        },
+        {
+          "name": "Gene Family",
+          "domain": "string"
+        },
+        {
+          "name": "Gene Function",
+          "domain": "string"
+        },
+        {
+          "name": "Gene Structure",
+          "domain": "string"
+        },
+        {
+          "name": "Gene Therapy",
+          "domain": "string"
+        },
+        {
+          "name": "Genetic Variability",
+          "domain": "string"
+        },
+        {
+          "name": "Genotype",
+          "domain": "string"
+        },
+        {
+          "name": "Genotype/Phenotype Correlations",
+          "domain": "string"
+        },
+        {
+          "name": "Hererogeneity",
+          "domain": "string"
+        },
+        {
+          "name": "History",
+          "domain": "string"
+        },
+        {
+          "name": "Inheritance",
+          "domain": "string"
+        },
+        {
+          "name": "Mapping",
+          "domain": "string"
+        },
+        {
+          "name": "Molecular Genetics",
+          "domain": "string"
+        },
+        {
+          "name": "Nomenclature",
+          "domain": "string"
+        },
+        {
+          "name": "Other Features",
+          "domain": "string"
+        },
+        {
+          "name": "Pathogenesis",
+          "domain": "string"
+        },
+        {
+          "name": "Phenotype",
+          "domain": "string"
+        },
+        {
+          "name": "Population Genetics",
+          "domain": "string"
+        }
+      ],
+      "index": true
+    },
+    {
+      "name": "GeneReview",
+      "unique": true,
+      "domain": "string",
+      "properties": [
+        {
+          "name": "PMID",
+          "domain": "string"
+        },
+        {
+          "name": "Book Publisher",
+          "domain": "string"
+        },
+        {
+          "name": "Book Title",
+          "domain": "string"
+        },
+        {
+          "name": "Book First Year",
+          "domain": "string"
+        },
+        {
+          "name": "Book Recent Year",
+          "domain": "string"
+        },
+        {
+          "name": "Book Editors",
+          "domain": "string"
+        },
+        {
+          "name": "Book Medium",
+          "domain": "string"
+        },
+        {
+          "name": "Title",
+          "domain": "string"
+        },
+        {
+          "name": "Language",
+          "domain": "string"
+        },
+        {
+          "name": "Authors",
+          "domain": "string"
+        },
+        {
+          "name": "Type",
+          "domain": "string"
+        },
+        {
+          "name": "Abstract",
+          "domain": "string"
+        },
+        {
+          "name": "Copyright",
+          "domain": "string"
+        },
+        {
+          "name": "Sections",
+          "domain": "string"
+        },
+        {
+          "name": "Contribution Date",
+          "domain": "string"
+        },
+        {
+          "name": "Revision Date",
+          "domain": "string"
+        },
+        {
+          "name": "Grants",
+          "domain": "string"
+        },
+        {
+          "name": "Synonyms",
+          "domain": "string"
+        },
+        {
+          "name": "Url-XML",
+          "domain": "url"
+        },
+        {
+          "name": "Url-Page",
+          "domain": "url"
+        }
+      ],
+      "index": true
+    },
+    {
+      "name": "Orphanet",
+      "unique": true,
+      "identifier": false,
+      "domain": "string",
+      "properties": [
+        {
+          "name": "Name",
+          "domain": "string",
+          "required": true,
+          "index": true
+        },
+        {
+          "name": "Url-Page",
+          "domain": "url"
+        },
+        {
+          "name": "Data Version",
+          "domain": "string"
+        },
+        {
+          "name": "Disorder Type",
+          "domain": "string"
+        },
+        {
+          "name": "Synonyms",
+          "category": true,
+          "domain": "[valueless]",
+          "fixed": true,
+          "items": [
+            {
+              "name": "Synonym",
+              "unique": true,
+              "identifier": true,
+              "domain": "string",
+              "required": true,
+              "index": true
+            }
+          ]
+        },
+        {
+          "name": "Clinical Signs",
+          "category": true,
+          "domain": "[valueless]",
+          "fixed": true,
+          "items": [
+            {
+              "name": "Sign",
+              "unique": true,
+              "identifier": true,
+              "domain": "string",
+              "properties": [
+                {
+                  "name": "Frequency",
+                  "domain": "string"
+                }
+              ],
+              "required": true,
+              "index": true
+            }
+          ]
+        },
+        {
+          "name": "Epidemiology",
+          "category": true,
+          "domain": "[valueless]",
+          "properties": [
+            {
+              "name": "Ages of Onset and Death",
+              "category": true,
+              "domain": "[valueless]",
+              "properties": [
+                {
+                  "name": "Ages of Death",
+                  "category": true,
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Average Age of Death",
+                      "unique": true,
+                      "identifier": true,
+                      "domain": "string",
+                      "required": true,
+                      "index": true
+                    }
+                  ]
+                },
+                {
+                  "name": "Ages of Onset",
+                  "category": true,
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Average Age of Onset",
+                      "unique": true,
+                      "identifier": true,
+                      "domain": "string",
+                      "required": true,
+                      "index": true
+                    }
+                  ]
+                }
+              ],
+              "fixed": true
+            },
+            {
+              "name": "Prevalences",
+              "category": true,
+              "domain": "[valueless]",
+              "fixed": true,
+              "items": [
+                {
+                  "name": "Prevalence ID",
+                  "unique": true,
+                  "identifier": true,
+                  "domain": "string",
+                  "properties": [
+                    {
+                      "name": "Prevalence",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Geographic",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Qualification",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Status",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Type",
+                      "domain": "string"
+                    }
+                  ],
+                  "required": true,
+                  "index": true
+                }
+              ]
+            },
+            {
+              "name": "Types of Inheritance",
+              "category": true,
+              "domain": "[valueless]",
+              "fixed": true,
+              "items": [
+                {
+                  "name": "Type of Inheritance",
+                  "unique": true,
+                  "identifier": true,
+                  "domain": "string",
+                  "required": true,
+                  "index": true
+                }
+              ]
+            }
+          ],
+          "fixed": true
+        },
+        {
+          "name": "Gene Associations",
+          "category": true,
+          "domain": "[valueless]",
+          "fixed": true,
+          "items": [
+            {
+              "name": "Gene",
+              "unique": true,
+              "identifier": true,
+              "domain": "string",
+              "properties": [
+                {
+                  "name": "Name",
+                  "domain": "string"
+                },
+                {
+                  "name": "Type",
+                  "domain": "string"
+                },
+                {
+                  "name": "Synonyms",
+                  "category": true,
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Synonym",
+                      "unique": true,
+                      "identifier": true,
+                      "domain": "string",
+                      "required": true,
+                      "index": true
+                    }
+                  ]
+                },
+                {
+                  "name": "Loci",
+                  "category": true,
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Locus",
+                      "unique": true,
+                      "identifier": true,
+                      "domain": "string",
+                      "required": true,
+                      "index": true
+                    }
+                  ]
+                },
+                {
+                  "name": "Associations",
+                  "category": true,
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Association",
+                      "unique": true,
+                      "identifier": true,
+                      "domain": "string",
+                      "properties": [
+                        {
+                          "name": "Status",
+                          "domain": "string"
+                        }
+                      ],
+                      "required": true,
+                      "index": true
+                    }
+                  ]
+                }
+              ],
+              "required": true,
+              "index": true
+            }
+          ]
+        }
+      ],
+      "required": false,
+      "index": true
+    },
+    {
+      "name": "Other Reference",
+      "category": true,
+      "domain": "[valueless]",
+      "properties": [
+        {
+          "name": "Article Title",
+          "domain": "string",
+          "required": true
+        },
+        {
+          "name": "Year",
+          "domain": "int",
+          "required": true
+        },
+        {
+          "name": "External Link",
+          "domain": "url"
+        },
+        {
+          "name": "Date Accessed",
+          "domain": "string"
+        },
+        {
+          "name": "Authors",
+          "domain": "string"
+        },
+        {
+          "name": "Institution",
+          "domain": "string"
+        },
+        {
+          "name": "Journal Title",
+          "domain": "string"
+        },
+        {
+          "name": "Volume",
+          "domain": "string"
+        },
+        {
+          "name": "Issue",
+          "domain": "string"
+        },
+        {
+          "name": "Pages",
+          "domain": "string"
+        },
+        {
+          "name": "Publisher",
+          "domain": "string"
+        },
+        {
+          "name": "Abstract",
+          "domain": "string"
+        }
+      ],
+      "fixed": true
+    }
+  ],
+  "required": true,
+  "index": true
+}

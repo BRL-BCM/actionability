@@ -1,0 +1,144 @@
+{ 
+  "data": {
+    "labelWidths": {
+      "Tier": 30,
+      "Notes": 50,
+      "Recommendation Text": 150,
+      "Source of Population": 150
+    },
+    "props": {
+        "ActionabilityDocID.Stage 2.Outcomes": {
+          "propText": "Outcomes/Interventions",
+          "divId": "outComesDiv",
+          "cls": "stageTwoDepth0Cls"
+        },
+        "ActionabilityDocID.Stage 2.Nature of the Threat": {
+          "propText": "Nature of the Threat",
+          "divId": "natureOfThreatDiv",
+          "cls": "stageTwoDepth0Cls",
+          "hasContent": "false"
+        },
+        "ActionabilityDocID.Stage 2.Nature of the Threat.Prevalence of the Genetic Disorder": {
+          "propText": "Prevalence of Disorder",
+          "divId": "prevalenceDiv",
+          "parentDivId": "natureOfThreatDiv",
+          "cls": "stageTwoDepth1Cls",
+          "keyTextStr": "Prevalence",
+          "keyTextLabelLength": 80
+        },
+        "ActionabilityDocID.Stage 2.Nature of the Threat.Clinical Features": {
+          "propText": "Clinical Features",
+          "divId": "clinFeatDiv",
+          "parentDivId": "natureOfThreatDiv",
+          "cls": "stageTwoDepth1Cls"
+        },
+        "ActionabilityDocID.Stage 2.Nature of the Threat.Natural History": {
+          "propText": "Natural History",
+          "divId": "natHistDiv",
+          "parentDivId": "natureOfThreatDiv",
+          "cls": "stageTwoDepth1Cls"
+        },
+        "ActionabilityDocID.Stage 2.Effectiveness of Intervention": {
+          "propText": "Effectiveness",
+          "divId": "effectDiv",
+          "cls": "stageTwoDepth0Cls",
+          "hasContent": "false"
+        },
+        "ActionabilityDocID.Stage 2.Effectiveness of Intervention.Patient Managements": {
+          "propText": "Patient Management",
+          "divId": "patManDiv",
+          "cls": "stageTwoDepth1Cls",
+          "keyTextStr": "Management",
+          "keyTextLabelLength": 100
+        },
+        "ActionabilityDocID.Stage 2.Effectiveness of Intervention.Surveillances": {
+          "propText": "Surveillance",
+          "divId": "survDiv",
+          "cls": "stageTwoDepth1Cls",
+          "keyTextStr": "Surveillance",
+          "keyTextLabelLength": 90
+        },
+        "ActionabilityDocID.Stage 2.Effectiveness of Intervention.Family Managements": {
+          "propText": "Family Management",
+          "divId": "famManDiv",
+          "cls": "stageTwoDepth1Cls",
+          "keyTextStr": "Management",
+          "keyTextLabelLength": 100
+        },
+        "ActionabilityDocID.Stage 2.Effectiveness of Intervention.Circumstances to Avoid": {
+          "propText": "Circumstances to Avoid",
+          "divId": "cirAvoidDiv",
+          "cls": "stageTwoDepth1Cls",
+          "keyTextStr": "Circumstance",
+          "keyTextLabelLength": 100
+        },
+        "ActionabilityDocID.Stage 2.Threat Materialization Chances": {
+          "propText": "Threat Materialization Chance",
+          "divId": "thMatDiv",
+          "cls": "stageTwoDepth0Cls",
+          "hasContent": "false"
+        },
+        "ActionabilityDocID.Stage 2.Threat Materialization Chances.Mode of Inheritance": {
+          "propText": "Inheritance Mode",
+          "divId": "inhModeDiv",
+          "cls": "stageTwoDepth1Cls",
+          "keyTextStr": "Inheritance Mode",
+          "keyTextLabelLength": 140
+        },
+        "ActionabilityDocID.Stage 2.Threat Materialization Chances.Prevalence of the Genetic Mutation": {
+          "propText": "Prevalence of Mutation",
+          "divId": "preMutDiv",
+          "cls": "stageTwoDepth1Cls",
+          "keyTextStr": "Prevalence",
+          "keyTextLabelLength": 100
+        },
+        "ActionabilityDocID.Stage 2.Threat Materialization Chances.Penetrances": {
+          "propText": "Penetrance",
+          "divId": "penetrancesDiv",
+          "cls": "stageTwoDepth1Cls",
+          "keyTextStr": "Penetrance",
+          "keyTextLabelLength": 90
+        },
+        "ActionabilityDocID.Stage 2.Threat Materialization Chances.Relative Risk": {
+          "propText": "Relative Risk",
+          "divId": "relRiskDiv",
+          "cls": "stageTwoDepth1Cls",
+          "keyTextLabelLength": 100
+        },
+        "ActionabilityDocID.Stage 2.Threat Materialization Chances.Expressivity Notes": {
+          "propText": "Expressivity",
+          "divId": "expNotesDiv",
+          "keyTextStr": "Notes",
+          "keyTextPlaceholder": "Enter notes here...",
+          "excludeProps": ["Notes"],
+          "cls": "stageTwoDepth1Cls",
+          "keyTextLabelLength": 50
+        },
+        
+        "ActionabilityDocID.Stage 2.Acceptability of Intervention.Nature of Intervention": {
+          "propText": "Nature of Intervention",
+          "divId": "natIntDiv",
+          "excludeProps": ["Notes"],
+          "keyTextStr": "Notes",
+          "keyTextPlaceholder": "Enter notes here...",
+          "cls": "stageTwoDepth0Cls",
+          "keyTextLabelLength": 50
+        },
+        
+        "ActionabilityDocID.Stage 2.Condition Escape Detection.Chance to Escape Clinical Detection": {
+          "propText": "Clinical Detection Escape Chance",
+          "divId": "clinDetEspDiv",
+          "cls": "stageTwoDepth0Cls",
+          "keyTextStr": "Notes",
+          "excludeProps": ["Notes"],
+          "keyTextPlaceholder": "Enter notes here...",
+          "keyTextLabelLength": 50
+        },
+        "ActionabilityDocID.Stage 2.Status": {
+          "propText": "Status",
+          "divId": "stage2StatusDiv",
+          "cls": "stageTwoDepth0Cls"
+        }
+      }
+    }
+}

@@ -1,0 +1,166 @@
+/* PAGE ITSELF */
+div#content {
+  background-color: white ;
+  font-family: Verdana, arial, helvetica ;
+  margin: 0px 0px 30px 0px ;
+  padding: 0;
+}
+#page {
+  padding-left: 30px ;
+  padding-right: 30px ;
+  /* padding-right: 50px ; */
+  max-width: 96% ;
+}
+
+/* ALL LINKS */
+a {
+  color: #163e73 !important ; /* important, so applies to :hover, :visited etc too */
+}
+
+/* Arrange to remove menubar when printing */
+@media print {
+  #topmenu {
+    display: none ;
+  }
+}
+
+/* DOC RENDER */
+#doc {
+}
+
+/* GENERIC */
+.missing {
+  font-style: italic ;
+}
+
+/* TITLES & HEADINGS within the doc. Full control, rather than h1/h2/etc */
+#stage1Table {
+  margin-top: 10px ;
+}
+
+.rptTitle {
+  color: black ;
+}
+
+.rptSubTitle {
+  margin-top: 5px ;
+  color: red !important ;
+}
+
+/* REPORT TABLE */
+.rptTable {
+}
+
+.rptTable .h3 {
+  font-size: 22px ; /* Override bootstrap's .h3 font-size of 24px */
+}
+.rptTable .sectionHdr {
+  margin: 10px 0px 0px 0px ;
+  padding-left: 5px ;
+}
+
+.rptTabl .sectionHdr.h3 {
+  font-size: 1.5em ;
+}
+
+.rptTable .sectionHdr.pushDown1 {
+  margin-top: 40px !important ;
+}
+
+.rptTable .colHeader.lvl1 {
+  background-color: #4A9431 ;
+  color: black ;
+}
+
+.rptTable .colHeader.lvl1 .attr {
+  font-weight: bold ;
+}
+
+.rptTable .colHeader.lvl1 .values {
+  font-style: italic ;
+}
+
+.rptTable .colBody {
+  padding-left: 0px !important ;
+  padding-right: 0px !important ;
+}
+
+@media (min-width: 992px) {
+  .rptTable .colBody.rightCol {
+    padding-left : 5px !important;
+    border-left  : 1px solid black;
+  }
+}
+
+@media (min-width: 768px) {
+  .rptTable .colBody.rightCol {
+    padding-left : 5px !important;
+  }
+}
+
+.rptTable .question {
+  font-weight: bold ;
+  text-align: left ;
+  text-indent: -1.5em ;
+  padding-left: 1.5em ;
+  margin-top: 15px ;
+}
+
+.rptTable .yes-no {
+  margin-top: 10px ;
+  margin-left: 8px !important ;
+}
+
+.rptTable .yes-no .yes,.no,.other {
+  font-size: 20px ;
+  font-weight: bold ;
+  margin-top: 10px ;
+}
+
+
+.rptTable .yes-no .important {
+  color: red ;
+}
+
+.rptTable .yes-no .instruction {
+  font-size: 0.76em ;
+}
+
+.rptTable .yes-no .minor {
+  font-size: 1.1em ;
+}
+
+.rptTable .yes.withInstruction,.no.withInstruction,.other.withInstruction {
+  margin-left: 10px ;
+}
+
+.rptTable .rptRow .header.lvl2 {
+  background-color: white ;
+  color: black ;
+  font-weight: bold ;
+}
+
+.rptTable .colHeader.lvl3 {
+  background-color: grey ;
+  color: black ;
+  font-weight: bold ;
+  font-size: 1.2em ;
+}
+
+.rptTable .colHeader.lvl3 .subtitle {
+  font-size: 1em ;
+}
+
+.rptTable .rowHeader .title {
+  font-weight: bold ;
+}
+
+.rptTable .rowHeader .subtitle {
+  font-size: 0.96em ;
+}
+
+.rptTable .even {
+  background-color: white ;
+}
+
+.r

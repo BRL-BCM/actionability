@@ -1,0 +1,63 @@
+# ----------------------------------------------------
+# Localization Strings for GenboreeKB - Actionability Curation 
+# - only English (en) to start
+# - put other languages in their own files (e.g. fr.yml) like Redmine does
+# - all localization keys for the GenboreeKB plugin must have the gbkb_ prefix
+# - after the gbkb_ prefix, follow usual naming convention of label_ field_ test_ permiission_ etc etc etc
+#   used in Rails and [most] standard plugins.
+# ----------------------------------------------------
+# English strings go here for Rails i18n
+en:
+  # my_label: "My label"
+  gbac_label_project_settings_tab: ActionabilityCuration
+  gbac_label_edit_settings: Actionability Curation Settings
+  gbac_gb_host: Genboree Host
+  gbac_gb_group: Genboree Group
+  gbac_gb_kb: Kb Name
+  gbac_gb_ac_curation_coll: Actionability Curation Collection
+  gbac_gb_ac_references_coll: Actionability References Collection
+  gbac_gb_ac_genes_coll: Actionability Genes Collection
+  gbac_gb_ac_orphanet_coll: Orphanet Mirror Collection (full rsrcPath)
+  gbac_gb_ac_release_kb: Release KB (full rsrcPath)
+  gbac_use_redmine_layout: Use Redmine Layout
+  gbac_header_file_path: Header File Path
+  gbac_footer_file_path: Footer File Path
+  gbac_label_description: Description
+  gbac_button_edit: Update
+  gbac_settings_label_dir: Content Dir Pattern
+  gbac_settings_label_index_files: Index Files
+  gbac_settings_label_valid_exts: Valid Extensions Regexp
+  gbac_settings_label_max_size: Max Embedded File Size
+  gbac_settings_label_caption: Menu Name
+  gbac_label_gb_filedir_name: Name
+  gbac_label_gb_filedir_size: Size
+  gbac_label_gb_filedir_updated: Last Updated
+  gbac_label_gb_filedir_actions: Actions
+  
+  
+  permission_gbac_view_sencha: View Sencha Assets
+  permission_gbac_view_entry: View Entry Page
+  permission_gbac_view_full_view: View Full View/Report Page
+  permission_gbac_view_stg1_rule_out_report: View Stage 1 Rule-Out Report Page
+  permission_gbac_view_stg2_summary_report: View Stage 2 Summary Report Page
+  permission_gbac_view_curation: View Curation Page
+  permission_gbac_view_lit_search: View Literature Search Info
+  permission_gbac_view_stage1: View Stage 1/Survey
+  permission_gbac_view_stage2: View Stage 2
+  permission_gbac_view_scoring: View Scoring
+  permission_gbac_view_scoring_status: View Scoring Status
+  permission_gbac_edit_lit_search: Edit Literature Search Info
+  permission_gbac_edit_syndrome_info: Edit Syndrome Info
+  permission_gbac_edit_doc_status_info: Edit Status Info
+  permission_gbac_edit_doc_release: Release/Retract the document
+  permission_gbac_finalize_lit_search: Finalize Literature Search Info
+  permission_gbac_edit_stage1: Edit Stage 1/Survey
+  permission_gbac_edit_final_stage1 : Edit/Perform final Stage1 Survey (Approver)
+  permission_gbac_finalize_stage1: Finalize Stage 1/Survey
+  permission_gbac_edit_stage2: Edit Stage 2
+  permission_gbac_finalize_stage2: Finalize Stage 2
+  permission_gbac_edit_scoring: Edit/Perform Scoring
+  permission_gbac_edit_final_scores : Edit/Perform Final Scoring (Approver)
+  permission_gbac_finalize_scoring: Finalize Scoring
+  permission_gbac_rollback_completion: Rollback 'Completed' Sections
+  

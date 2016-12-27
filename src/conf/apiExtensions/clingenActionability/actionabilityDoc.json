@@ -1,0 +1,17 @@
+{
+  "rsrc" : {
+    "pathBase" : "/REST-ext/clingen/actionability"
+  },
+  "records" : {
+    "host" : "localhost",
+    "grp"  : "actionability",
+    "kb"   : "actionability",
+    "coll" : "combined_model",
+    "login" : "genbadmin"
+  },
+  "redmine" : {
+    "host" : "localhost",
+    "mount" : "redmine",
+    "project" : "actionability"
+  }
+}

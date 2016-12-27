@@ -1,0 +1,13 @@
+<%# Currently future functionality: %>
+<% $stderr.puts "in index view " %>
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'dir_list', :plugin => 'genboree_ac' %>
+<% end %>
+
+<!-- Build table of contents if can. -->
+<%  if(@tocFiles.is_a?(Array) and !@tocFiles.empty?) %>
+      <%= render :partial => 'dir_list' %>
+<%  else %>
+  <br>
+  <i>(No files or directories present.)</i>
+<% end %>

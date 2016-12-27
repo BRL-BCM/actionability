@@ -1,0 +1,26 @@
+{
+  "domain": "string",
+  "identifier": true,
+  "index": true,
+  "required": true,
+  "name": "Gene",
+  "unique": true,
+  "properties": [
+    {
+      "domain": "string",
+      "index": true,
+      "required": true,
+      "name": "Name"
+    },
+    {
+      "domain": "string",
+      "index": true,
+      "required": true,
+      "name": "HGNCId"
+    },
+    {
+      "domain": "string",
+      "name": "GeneOMIM"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+ .differ {
+  font-weight: bold;
+}
+ins.differ {
+  /* background-color: green; */
+  color: limegreen;
+}
+del.differ {
+  /* background-color: lightcoral; */
+  color: red;
+}

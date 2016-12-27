@@ -1,0 +1,15 @@
+
+<%#
+  When calling render for this partial:
+    * Must provide arg -- :locals => { :msgHtml => '{htmlForMessage}' }
+    * Must provide arg -- :object => { :type => '{bootstrapAlertType}' }
+      - In addtion to :type, you can also set these keys in :object Hash:
+        . :classes => '{spaceDelimClassesForAlert}'
+        . :dismissible => false   # anything other than exactly false is true...i.e. dismissible
+%>
+<div class="<%= bsAlert[:classes] if(bsAlert[:classes])%> alert alert-<%= bsAlert[:type] %> <%= 'alert-dismissible' unless(bsAlert[:dismissible] == false) %> " role="alert">
+  <div class="text-left">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <%= msgHtml.html_safe %>
+  </div>
+</div>

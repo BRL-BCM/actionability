@@ -1,0 +1,4 @@
+# FQDN of this instance of Actionability. 
+# It is required.
+# No slash at the end.
+actionabilityFQDN: localhost

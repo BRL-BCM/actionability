@@ -1,0 +1,14 @@
+
+table.list.genboree_ac td.entity {
+  text-align: left ;
+}
+.genboree_ac.list_title {
+  font-size : 1.5em ;
+  font-weight : bold ;
+}
+
+.genboree_ac.list_entity {
+  font-family : monospace ;
+}
+
+

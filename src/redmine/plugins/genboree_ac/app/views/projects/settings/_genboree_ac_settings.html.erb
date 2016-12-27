@@ -1,0 +1,75 @@
+<%
+  @genboreeAc = GenboreeAc.find_by_project_id(@project)
+  #$stderr.puts "Got @genboreeAc for @project '#{@project.inspect}}' ?\n\n#{@genboreeAc.inspect}\n\n"
+  @genboreeAc ||= nil
+%>
+  <h3><%= l(:gbac_label_edit_settings) %></h3>
+  <%
+    checkBoxCheck = true
+    checkBoxValue = '1'
+    headerContentFileLoc = ""
+    footerContentFileLoc = ""
+    gbHost = ""
+    gbGroup = ""
+    gbKb = ""
+    if(@genboreeAc)
+      if(@genboreeAc.useRedmineLayout == false)
+        checkBoxCheck = false
+        checkBoxValue = '0'
+      end
+      headerContentFileLoc = @genboreeAc.headerIncludeFileLoc
+      footerContentFileLoc = @genboreeAc.footerIncludeFileLoc
+      gbHost = @genboreeAc.gbHost
+      gbGroup = @genboreeAc.gbGroup
+      gbActCurationColl = @genboreeAc.actionabilityColl
+      gbActRefColl = @genboreeAc.referencesColl
+      gbActGenesColl = @genboreeAc.genesColl
+      gbKb = @genboreeAc.gbKb
+      gbActOrphanetCollRsrcPath = @genboreeAc.gbActOrphanetCollRsrcPath
+      gbReleaseKbRsrcPath = @genboreeAc.gbReleaseKbRsrcPath
+    end
+  %>
+  <%= form_tag("../../../genboree_ac/update") do %>
+    <table style="padding-top:20px;padding-left:20px;">
+      <tr><td><b><%= label_tag "use_redmine_layout", l(:gbac_use_redmine_layout) %></b></td><td>
+        <%= check_box "useRedmineLayout", 'aa', { :checked => checkBoxCheck }, checked_value = "1", unchecked_value = "0"   %>
+        <!--<%= check_box_tag "useRedmineLayout"  %>-->
+      </td></tr>
+      <tr><td><b><%= label_tag "gb_host", l(:gbac_gb_host) %></b></td><td>
+        <%= text_field_tag "gbHost", gbHost, {:size => 20 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gb_group", l(:gbac_gb_group) %></b></td><td>
+        <%= text_field_tag "gbGroup", gbGroup, {:size => 20 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gb_kb", l(:gbac_gb_kb) %></b></td><td>
+        <%= text_field_tag "gbKb", gbKb, {:size => 20 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "header_file_path", l(:gbac_header_file_path) %></b></td><td>
+        <%= text_field_tag "headerIncludeFileLoc", headerContentFileLoc, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "footer_file_path", l(:gbac_footer_file_path) %></b></td><td>
+        <%= text_field_tag "footerIncludeFileLoc", footerContentFileLoc, {:size => 50 } %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gbac_gb_ac_curation_coll", l(:gbac_gb_ac_curation_coll) %></b></td><td>
+        <%= text_field_tag "gbActCurationColl", gbActCurationColl, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gbac_gb_ac_references_coll", l(:gbac_gb_ac_references_coll) %></b></td><td>
+        <%= text_field_tag "gbActRefColl", gbActRefColl, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gbac_gb_ac_genes_coll", l(:gbac_gb_ac_genes_coll) %></b></td><td>
+        <%= text_field_tag "gbActGenesColl", gbActGenesColl, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gbac_gb_ac_orphanet_coll", l(:gbac_gb_ac_orphanet_coll) %></b></td><td>
+        <%= text_field_tag "gbActOrphanetCollRsrcPath", gbActOrphanetCollRsrcPath, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gbac_gb_ac_release_kb", l(:gbac_gb_ac_release_kb) %></b></td><td>
+        <%= text_field_tag "gbReleaseKbRsrcPath", gbReleaseKbRsrcPath, {:size => 50 }    %>
+      </td></tr>
+    </table>
+    <dl style="padding-left:20px;">
+      <%= hidden_field_tag "project_id", @project.id %>
+      <%= hidden_field_tag "project_ident", @project.identifier %>
+      <%= submit_tag l(:gbac_button_edit) %>
+    </dl>
+  <% end %>
+

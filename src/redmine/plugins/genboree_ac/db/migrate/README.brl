@@ -1,0 +1,73 @@
+REDMINE PLUGIN MIGRATIONS
+==================================
+
+Don't hack at the Rails/Redmine tables directly, not even for plugins
+and not even for the plugin's project-specific settings/model table.
+
+(Some older Genboree Patch Notes have hacked in new columns to such plugin
+project settings table, like the extra columns added to genboree_acs table
+after the initial creation--which was via a migration).
+
+Rather, use Rails' built-in migration support along with very minor
+adaptation for Redmine plugins.
+
+
+A. SCENARIO: Add a New Column to a Plugin's Settings/Model Table.
+-----------------------------------------------------------------
+
+* This can be adapted for different column specs like providing a
+  default via :default, not null via :null=>false, etc.
+* Also can adapt this to alter columns etc.
+* Ref: http://guides.rubyonrails.org/active_record_migrations.html
+* Ref: http://api.rubyonrails.org/classes/ActiveRecord/Migration.html
+
+
+A.1 First, create your migration skeleton using the rails generator 
+
+* Do this in rails install base dir
+* Format:
+    rails generate migration Add{ColumnNameCapitalize}To{Table} {column_spec}
+
+RAILS_ENV=production rails generate migration AddGbActOrphanetCollRsrcPathToGenboreeAcs gbActOrphanetCollRsrcPath:string
+
+* When you follow this convention--there is also Remove{col}From{table} etc--Rails
+  will create an appropriate migration skeleton and print out the name.
+
+
+A.2 Move the generated migration skeleton to your plugin.
+
+* Rails puts the migration skeleton the top-level Rails app location: ./db/migrate/
+* It uses a time-stamp based prefix...that is not correct for a Redmine plugin migration.
+* Therefore, move the generated migration to ./plugins/{plugin}/db/migrate/NNN_{suffix}
+  - Replace the Rails timestamp prefix with a number/counter type prefix.
+    . Say, add 5 or 10 to the last migration for the plugin.
+  - Keep the suffix the same.
+* For example:
+
+mv ./db/migrate/20160510155731_add_gb_act_orphanet_coll_rsrc_path_to_genboree_acs.rb ./plugins/genboree_ac/db/migrate/010_add_gb_act_orphanet_coll_rsrc_path_to_genboree_acs.rb
+
+
+A.3 Edit/review your plugin's migration
+
+* Add any extra columns, column specifiers etc you need.
+* Many times, because you used the Add{col}To{table}, Remove{col}From{{table}, Create{table}
+  you won't need to change/edit anything.
+
+
+A.4 Test/run your plugin's migration
+
+* This is what will be done during patch deployment.
+* Do NOT perform untargeted all-plugin migrations when you intend
+  on making a specific migration for a specific plugin.
+* ALWAYS provide the NAME of the plugin.
+* Run from the rails install base dir, the format is:
+    rake redmine:plugins:migrate NAME={plugin} RAILS_ENV=production
+* Example:
+
+rake redmine:plugins:migrate NAME=genboree_ac RAILS_ENV=production
+
+* Verify the table looks right via mysql console!
+
+
+
+

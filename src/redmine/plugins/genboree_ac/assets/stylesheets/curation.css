@@ -1,0 +1,36 @@
+#referencesPanel-body .x-column-header-inner .x-column-header-text {
+  white-space: normal;
+}
+ 
+#referencesPanel-body .x-column-header-inner {
+  line-height: normal;
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+  text-align: center;
+  top: 20%;
+}
+
+#referencesPanel-body .x-grid-cell-inner {
+  white-space: normal
+}
+#sectionContentsPanel-body .x-column-header-inner .x-column-header-text {
+  white-space: normal;
+}
+ 
+#sectionContentsPanel-body .x-column-header-inner {
+  line-height: normal;
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+  text-align: center;
+  top: 20%;
+  font-weight: 
+}
+
+#sectionContentsPanel-body .x-grid-cell-inner {
+  white-space: normal ;
+}
+
+ .sectionBodyCls {
+  background-color: #f0f0f0;
+  color: #000;
+}

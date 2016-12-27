@@ -1,0 +1,1702 @@
+{
+  "name": "ActionabilityDocID",
+  "unique": true,
+  "index": true,
+  "JSON-LD Flag": "@id",
+  "domain": "autoID(AC, increment[3],,)",
+  "properties": [
+    {
+      "name": "Status",
+      "index": true,
+      "domain": "enum(Entered, Collecting, Reviewing, Released)",
+      "comments": "Document status",
+      "required": true,
+      "default": "Entered"
+    },
+    {
+      "name": "Genes",
+      "domain": "numItems",
+      "items": [
+        {
+          "name": "Gene",
+          "Is Facet?": true,
+          "unique": true,
+          "index": true,
+          "domain": "string",
+          "properties": [
+            {
+              "name": "GeneFunction",
+              "domain": "string"
+            },
+            {
+              "name": "HGNCId",
+              "index": true,
+              "domain": "string",
+              "required": true
+            },
+            {
+              "name": "GeneOMIM",
+              "domain": "omim"
+            }
+          ],
+          "identifier": true,
+          "required": true
+        }
+      ],
+      "required": true
+    },
+    {
+      "name": "Syndrome",
+      "Is Facet?": true,
+      "index": true,
+      "domain": "string",
+      "properties": [
+        {
+          "name": "OmimIDs",
+          "domain": "numItems",
+          "items": [
+            {
+              "name": "OmimID",
+              "unique": true,
+              "index": true,
+              "domain": "omim",
+              "identifier": true,
+              "required": true
+            }
+          ],
+          "comments": "OMIM ID for Syndrome (should be actual OMIM domain?)"
+        },
+        {
+          "name": "OrphanetIDs",
+          "index": true,
+          "domain": "numItems",
+          "items": [
+            {
+              "name": "OrphanetID",
+              "unique": true,
+              "index": true,
+              "domain": "string",
+              "identifier": true,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "Overview",
+          "domain": "string"
+        },
+        {
+          "name": "Acronyms",
+          "domain": "numItems",
+          "items": [
+            {
+              "name": "Acronym",
+              "unique": true,
+              "index": true,
+              "domain": "string",
+              "identifier": true,
+              "required": true
+            }
+          ],
+          "category": true
+        }
+      ],
+      "comments": "Syndrome",
+      "required": true
+    },
+    {
+      "name": "LiteratureSearch",
+      "domain": "[valueless]",
+      "fixed": true,
+      "category": true,
+      "properties": [
+        {
+          "name": "Sources",
+          "domain": "numItems",
+          "items": [
+            {
+              "name": "Source",
+              "unique": true,
+              "index": true,
+              "domain": "enum(OMIM,GeneReview,Orphanet,Clinical Utility Gene Card,HuGE,National Guideline Clearinghouse,PUBMED,MedGen,Other)",
+              "properties": [
+                {
+                  "name": "SearchStrings",
+                  "domain": "numItems",
+                  "items": [
+                    {
+                      "name": "SearchString",
+                      "unique": true,
+                      "index": true,
+                      "domain": "string",
+                      "properties": [
+                        {
+                          "name": "NumberOfHits",
+                          "domain": "posInt",
+                          "required": true
+                        },
+                        {
+                          "name": "Date",
+                          "domain": "date",
+                          "required": true
+                        },
+                        {
+                          "name": "Notes",
+                          "required": false
+                        },
+                        {
+                          "name": "searchURL",
+                          "domain": "url",
+                          "required": false
+                        },
+                        {
+                          "name": "Label",
+                          "domain": "string"
+                        }
+                      ],
+                      "identifier": true,
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "name": "Notes",
+                  "domain": "string"
+                }
+              ],
+              "identifier": true,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "Status",
+          "domain": "enum(Complete, Incomplete, Verified)",
+          "comments": "User can turn this on when turned on the edit but becomes deactive with a note that contact administrator to reactivate it.",
+          "required": true,
+          "default": "Incomplete"
+        }
+      ]
+    },
+    {
+      "name": "Stage 1",
+      "domain": "[valueless]",
+      "fixed": true,
+      "category": true,
+      "properties": [
+        {
+          "name": "Final Stage1 Report",
+          "domain": "[valueless]",
+          "fixed": true,
+          "category": true,
+          "properties": [
+            {
+              "name": "Notes",
+              "domain": "string"
+            },
+            {
+              "name": "Actionability",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Practice Guideline",
+                  "domain": "enum(No,Yes)",
+                  "Notes": "Q1. Is there a practice guideline or systematic review for the genetic condition?",
+                  "required": true,
+                  "default": "No"
+                },
+                {
+                  "name": "Result Actionable",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Patient Management",
+                      "domain": "enum(No,Yes)",
+                      "Notes": "a. Patient Management",
+                      "required": true,
+                      "default": "No"
+                    },
+                    {
+                      "name": "Surveillance or Screening",
+                      "domain": "enum(No,Yes)",
+                      "Notes": "b. Surveillance or Screening",
+                      "required": true,
+                      "default": "No"
+                    },
+                    {
+                      "name": "Family Management",
+                      "domain": "enum(No,Yes)",
+                      "Notes": "c. Family Management",
+                      "required": true,
+                      "default": "No"
+                    },
+                    {
+                      "name": "Circumstances to Avoid",
+                      "domain": "enum(No,Yes)",
+                      "Notes": "d. Circumstances to Avoid",
+                      "required": true,
+                      "default": "No"
+                    },
+                    {
+                      "name": "Yes for 1 or more above",
+                      "domain": "enum(No, Yes)",
+                      "Notes": "This property is autopopulated based on answers to Stage 1.Actionability.Results Actionable.Patient Management...Circumstances to Avoid values. At least 1 should be yes",
+                      "required": true,
+                      "default": "No"
+                    }
+                  ],
+                  "Notes": "Q2. Does the practice guideline or systematic review indicate that the result is actionable in one or more of the following ways?",
+                  "required": true
+                },
+                {
+                  "name": "Result Actionable in undiagnosed",
+                  "domain": "enum(No,Yes)",
+                  "Notes": "3. Is the result actionable in an undiagnosed adult with the genetic condition?",
+                  "required": true,
+                  "default": "No"
+                }
+              ],
+              "required": true
+            },
+            {
+              "name": "Penetrance",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Moderate Penetrance Variant",
+                  "domain": "enum(No,Yes,Unknown)",
+                  "Notes": "4. Is there at least one known pathogenic variant with at least moderate penetrance (>=40%) or moderate relative risk (>=2) in any population? Yes/No/Unknown",
+                  "required": true,
+                  "default": "No"
+                }
+              ],
+              "required": true
+            },
+            {
+              "name": "Significance of Disease",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Important Health Problem",
+                  "domain": "enum(No,Yes)",
+                  "Notes": "5. Is this condition an important health problem?",
+                  "required": true,
+                  "default": "No"
+                }
+              ],
+              "required": true
+            },
+            {
+              "name": "Need for making exception",
+              "domain": "enum(No,Yes)",
+              "properties": [
+                {
+                  "name": "Exception Made",
+                  "domain": "enum(No,Yes)",
+                  "properties": [
+                    {
+                      "name": "Note why exception made",
+                      "domain": "string",
+                      "required": true
+                    }
+                  ],
+                  "required": true,
+                  "default": "No"
+                }
+              ],
+              "Notes": "This value is autogenerated.Yes if answers to questions Actionability.Practice Guideline, Results Actionable, Results Actionable in undiagnosed, Penetrance.ModertatePenetranceVariant, Significance of Disease.Important Health problem is No",
+              "required": true,
+              "default": "Yes"
+            },
+            {
+              "name": "Status",
+              "domain": "enum(Complete, Incomplete, Verified)",
+              "comments": "User can turn this on when turned on the edit but becomes deactive with a note that contact administrator to reactivate it.",
+              "required": true,
+              "default": "Incomplete"
+            }
+          ]
+        },
+        {
+          "name": "Scorers Stage1",
+          "domain": "numItems",
+          "items": [
+            {
+              "name": "Scorer Stage1",
+              "unique": true,
+              "index": true,
+              "domain": "gbAccount",
+              "properties": [
+                {
+                  "name": "First Name",
+                  "domain": "string"
+                },
+                {
+                  "name": "Last Name",
+                  "domain": "string"
+                },
+                {
+                  "name": "Notes",
+                  "domain": "string"
+                },
+                {
+                  "name": "Actionability",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Practice Guideline",
+                      "domain": "enum(No,Yes)",
+                      "Notes": "Q1. Is there a practice guideline or systematic review for the genetic condition?",
+                      "required": true,
+                      "default": "No"
+                    },
+                    {
+                      "name": "Result Actionable",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "category": true,
+                      "properties": [
+                        {
+                          "name": "Patient Management",
+                          "domain": "enum(No,Yes)",
+                          "Notes": "a. Patient Management",
+                          "required": true,
+                          "default": "No"
+                        },
+                        {
+                          "name": "Surveillance or Screening",
+                          "domain": "enum(No,Yes)",
+                          "Notes": "b. Surveillance or Screening",
+                          "required": true,
+                          "default": "No"
+                        },
+                        {
+                          "name": "Family Management",
+                          "domain": "enum(No,Yes)",
+                          "Notes": "c. Family Management",
+                          "required": true,
+                          "default": "No"
+                        },
+                        {
+                          "name": "Circumstances to Avoid",
+                          "domain": "enum(No,Yes)",
+                          "Notes": "d. Circumstances to Avoid",
+                          "required": true,
+                          "default": "No"
+                        },
+                        {
+                          "name": "Yes for 1 or more above",
+                          "domain": "enum(No, Yes)",
+                          "Notes": "This property is autopopulated based on answers to Stage 1.Actionability.Results Actionable.Patient Management...Circumstances to Avoid values. At least 1 should be yes",
+                          "required": true,
+                          "default": "No"
+                        }
+                      ],
+                      "Notes": "Q2. Does the practice guideline or systematic review indicate that the result is actionable in one or more of the following ways?",
+                      "required": true
+                    },
+                    {
+                      "name": "Result Actionable in undiagnosed",
+                      "domain": "enum(No,Yes)",
+                      "Notes": "3. Is the result actionable in an undiagnosed adult with the genetic condition?",
+                      "required": true,
+                      "default": "No"
+                    }
+                  ],
+                  "required": true
+                },
+                {
+                  "name": "Penetrance",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Moderate Penetrance Variant",
+                      "domain": "enum(No,Yes,Unknown)",
+                      "Notes": "4. Is there at least one known pathogenic variant with at least moderate penetrance (>=40%) or moderate relative risk (>=2) in any population? Yes/No/Unknown",
+                      "required": true,
+                      "default": "No"
+                    }
+                  ],
+                  "required": true
+                },
+                {
+                  "name": "Significance of Disease",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Important Health Problem",
+                      "domain": "enum(No,Yes)",
+                      "Notes": "5. Is this condition an important health problem?",
+                      "required": true,
+                      "default": "No"
+                    }
+                  ],
+                  "required": true
+                },
+                {
+                  "name": "Need for making exception",
+                  "domain": "enum(No,Yes)",
+                  "properties": [
+                    {
+                      "name": "Exception Made",
+                      "domain": "enum(No,Yes)",
+                      "properties": [
+                        {
+                          "name": "Note why exception made",
+                          "domain": "string",
+                          "required": true
+                        }
+                      ],
+                      "required": true,
+                      "default": "No"
+                    }
+                  ],
+                  "Notes": "This value is autogenerated.Yes if answers to questions Actionability.Practice Guideline, Results Actionable, Results Actionable in undiagnosed, Penetrance.ModertatePenetranceVariant, Significance of Disease.Important Health problem is No",
+                  "required": true,
+                  "default": "Yes"
+                },
+                {
+                  "name": "Status",
+                  "domain": "enum(Complete, Incomplete)",
+                  "comments": "User can turn this on when turned on the edit but becomes deactive with a note that contact administrator to reactivate it.",
+                  "required": true,
+                  "default": "Incomplete"
+                }
+              ],
+              "identifier": true,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "name": "Stage 2",
+      "domain": "[valueless]",
+      "fixed": true,
+      "category": true,
+      "properties": [
+        {
+          "name": "Outcomes",
+          "domain": "numItems",
+          "items": [
+            {
+              "name": "Outcome",
+              "unique": true,
+              "index": true,
+              "domain": "string",
+              "properties": [
+                {
+                  "name": "Interventions",
+                  "domain": "numItems",
+                  "items": [
+                    {
+                      "name": "Intervention",
+                      "unique": true,
+                      "index": true,
+                      "domain": "string",
+                      "identifier": true,
+                      "required": true
+                    }
+                  ],
+                  "item list": true
+                }
+              ],
+              "identifier": true,
+              "required": true
+            }
+          ],
+          "item list": true
+        },
+        {
+          "name": "Status",
+          "domain": "enum(Complete, Incomplete, Verified)",
+          "required": true,
+          "default": "Incomplete"
+        },
+        {
+          "name": "Summary",
+          "domain": "[valueless]",
+          "fixed": true,
+          "category": true,
+          "properties": [
+            {
+              "name": "Notes",
+              "domain": "string"
+            },
+            {
+              "name": "Binning summary report",
+              "domain": "fileUrl",
+              "properties": [
+                {
+                  "name": "File Upload Date",
+                  "domain": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Nature of the Threat",
+          "domain": "[valueless]",
+          "fixed": true,
+          "category": true,
+          "properties": [
+            {
+              "name": "Prevalence of the Genetic Disorder",
+              "JSON-LD Flag": "@id",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Key Text",
+                  "domain": "enum(>1-2 in 100, 1-2 in 500, 1-2 in 1000, 1-2 in 5000, 1-2 in 10000, 1-2 in 50000, < 1-2 in 100000, Unknown)",
+                  "required": true,
+                  "default": "Unknown"
+                },
+                {
+                  "name": "Notes",
+                  "domain": "string"
+                },
+                {
+                  "name": "Additional Fields",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Source of Population",
+                      "domain": "enum(General population, Gene mutation carriers, Other)"
+                    }
+                  ]
+                },
+                {
+                  "name": "References",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Reference",
+                      "unique": true,
+                      "index": true,
+                      "domain": "url",
+                      "Object Type": "ac:References",
+                      "identifier": true,
+                      "Relation to Object": "evidencedBy",
+                      "required": true
+                    }
+                  ],
+                  "category": true,
+                  "item list": true
+                }
+              ]
+            },
+            {
+              "name": "Clinical Features",
+              "JSON-LD Flag": "@id",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Key Text",
+                  "domain": "string",
+                  "required": true
+                },
+                {
+                  "name": "References",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Reference",
+                      "unique": true,
+                      "index": true,
+                      "domain": "url",
+                      "Object Type": "ac:References",
+                      "identifier": true,
+                      "Relation to Object": "evidencedBy",
+                      "required": true
+                    }
+                  ],
+                  "category": true,
+                  "item list": true
+                }
+              ]
+            },
+            {
+              "name": "Natural History",
+              "JSON-LD Flag": "@id",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Key Text",
+                  "domain": "string",
+                  "required": true
+                },
+                {
+                  "name": "References",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Reference",
+                      "unique": true,
+                      "index": true,
+                      "domain": "url",
+                      "Object Type": "ac:References",
+                      "identifier": true,
+                      "Relation to Object": "evidencedBy",
+                      "required": true
+                    }
+                  ],
+                  "category": true,
+                  "item list": true
+                }
+              ]
+            }
+          ],
+          "required": true
+        },
+        {
+          "name": "Effectiveness of Intervention",
+          "domain": "[valueless]",
+          "fixed": true,
+          "category": true,
+          "properties": [
+            {
+              "name": "Patient Managements",
+              "domain": "[valueless]",
+              "fixed": true,
+              "items": [
+                {
+                  "name": "Patient Management",
+                  "unique": true,
+                  "index": true,
+                  "JSON-LD Flag": "@id",
+                  "domain": "autoID(ACPM, increment[3],,)",
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Key Text",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Tier",
+                      "domain": "enum(1,2,3,4,5,Not provided)"
+                    },
+                    {
+                      "name": "Recommendation Text",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Outcomes",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Outcome",
+                          "unique": true,
+                          "index": true,
+                          "domain": "string",
+                          "identifier": true,
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    },
+                    {
+                      "name": "References",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Reference",
+                          "unique": true,
+                          "index": true,
+                          "domain": "url",
+                          "Object Type": "ac:References",
+                          "identifier": true,
+                          "Relation to Object": "evidencedBy",
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    }
+                  ],
+                  "identifier": true,
+                  "required": true
+                }
+              ],
+              "category": true,
+              "item list": true
+            },
+            {
+              "name": "Surveillances",
+              "domain": "[valueless]",
+              "fixed": true,
+              "items": [
+                {
+                  "name": "Surveillance",
+                  "unique": true,
+                  "index": true,
+                  "JSON-LD Flag": "@id",
+                  "domain": "autoID(ACSU, increment[3],,)",
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Key Text",
+                      "domain": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "Tier",
+                      "domain": "enum(1,2,3,4,5,Not provided)"
+                    },
+                    {
+                      "name": "Recommendation Text",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Outcomes",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Outcome",
+                          "unique": true,
+                          "index": true,
+                          "domain": "string",
+                          "identifier": true,
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    },
+                    {
+                      "name": "References",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Reference",
+                          "unique": true,
+                          "index": true,
+                          "domain": "url",
+                          "Object Type": "ac:References",
+                          "identifier": true,
+                          "Relation to Object": "evidencedBy",
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    }
+                  ],
+                  "identifier": true,
+                  "required": true
+                }
+              ],
+              "category": true,
+              "item list": true
+            },
+            {
+              "name": "Family Managements",
+              "domain": "[valueless]",
+              "fixed": true,
+              "items": [
+                {
+                  "name": "Family Management",
+                  "unique": true,
+                  "index": true,
+                  "JSON-LD Flag": "@id",
+                  "domain": "autoID(ACFM, increment[3],,)",
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Key Text",
+                      "domain": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "Tier",
+                      "domain": "enum(1,2,3,4,5,Not provided)"
+                    },
+                    {
+                      "name": "Recommendation Text",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Outcomes",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Outcome",
+                          "unique": true,
+                          "index": true,
+                          "domain": "string",
+                          "identifier": true,
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    },
+                    {
+                      "name": "References",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Reference",
+                          "unique": true,
+                          "index": true,
+                          "domain": "url",
+                          "Object Type": "ac:References",
+                          "identifier": true,
+                          "Relation to Object": "evidencedBy",
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    }
+                  ],
+                  "identifier": true,
+                  "required": true
+                }
+              ],
+              "category": true,
+              "item list": true
+            },
+            {
+              "name": "Circumstances to Avoid",
+              "domain": "[valueless]",
+              "fixed": true,
+              "items": [
+                {
+                  "name": "Circumstance to Avoid",
+                  "unique": true,
+                  "index": true,
+                  "JSON-LD Flag": "@id",
+                  "domain": "autoID(ACCA, increment[3],,)",
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Key Text",
+                      "domain": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "Tier",
+                      "domain": "enum(1,2,3,4,5,Not provided)"
+                    },
+                    {
+                      "name": "Recommendation Text",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Outcomes",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Outcome",
+                          "unique": true,
+                          "index": true,
+                          "domain": "string",
+                          "identifier": true,
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    },
+                    {
+                      "name": "References",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Reference",
+                          "unique": true,
+                          "index": true,
+                          "domain": "url",
+                          "Object Type": "ac:References",
+                          "identifier": true,
+                          "Relation to Object": "evidencedBy",
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    }
+                  ],
+                  "identifier": true,
+                  "required": true
+                }
+              ],
+              "category": true,
+              "item list": true
+            }
+          ],
+          "required": true
+        },
+        {
+          "name": "Threat Materialization Chances",
+          "domain": "[valueless]",
+          "fixed": true,
+          "category": true,
+          "properties": [
+            {
+              "name": "Mode of Inheritance",
+              "JSON-LD Flag": "@id",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Key Text",
+                  "domain": "enum(Autosomal Dominant, Autosomal Codominant, Autosomal Recessive, X-linked, Unknown)",
+                  "required": true,
+                  "default": "Unknown"
+                }
+              ]
+            },
+            {
+              "name": "Prevalence of the Genetic Mutation",
+              "JSON-LD Flag": "@id",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Key Text",
+                  "domain": "enum(>1-2 in 100, 1-2 in 500, 1-2 in 1000, 1-2 in 5000, 1-2 in 10000, 1-2 in 50000, < 1-2 in 100000, Unknown)",
+                  "required": true,
+                  "default": "Unknown"
+                },
+                {
+                  "name": "Tier",
+                  "domain": "enum(1,2,3,4,5,Not provided)"
+                },
+                {
+                  "name": "Notes",
+                  "domain": "string"
+                },
+                {
+                  "name": "Outcomes",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Outcome",
+                      "unique": true,
+                      "index": true,
+                      "domain": "string",
+                      "identifier": true,
+                      "required": true
+                    }
+                  ],
+                  "category": true,
+                  "item list": true
+                },
+                {
+                  "name": "Additional Fields",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "category": true,
+                  "properties": [
+                    {
+                      "name": "Source of Population for this Prevalence",
+                      "domain": "enum(General population, Other)"
+                    }
+                  ]
+                },
+                {
+                  "name": "References",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Reference",
+                      "unique": true,
+                      "index": true,
+                      "domain": "url",
+                      "Object Type": "ac:References",
+                      "identifier": true,
+                      "Relation to Object": "evidencedBy",
+                      "required": true
+                    }
+                  ],
+                  "category": true,
+                  "item list": true
+                }
+              ]
+            },
+            {
+              "name": "Penetrances",
+              "JSON-LD Flag": "@id",
+              "domain": "numItems",
+              "items": [
+                {
+                  "name": "Penetrance",
+                  "unique": true,
+                  "index": true,
+                  "domain": "autoID(ACPE, increment[3],,)",
+                  "properties": [
+                    {
+                      "name": "Key Text",
+                      "domain": "enum(>= 40 %, 5-39 %, 1-4 %, < 1 %, Unknown)",
+                      "required": true,
+                      "default": "Unknown"
+                    },
+                    {
+                      "name": "Tier",
+                      "domain": "enum(1,2,3,4,5,Not provided)"
+                    },
+                    {
+                      "name": "Notes",
+                      "domain": "string"
+                    },
+                    {
+                      "name": "Outcomes",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Outcome",
+                          "unique": true,
+                          "index": true,
+                          "domain": "string",
+                          "identifier": true,
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    },
+                    {
+                      "name": "References",
+                      "domain": "[valueless]",
+                      "fixed": true,
+                      "items": [
+                        {
+                          "name": "Reference",
+                          "unique": true,
+                          "index": true,
+                          "domain": "url",
+                          "Object Type": "ac:References",
+                          "identifier": true,
+                          "Relation to Object": "evidencedBy",
+                          "required": true
+                        }
+                      ],
+                      "category": true,
+                      "item list": true
+                    }
+                  ],
+                  "identifier": true,
+                  "required": true
+                }
+              ],
+              "category": true
+            },
+            {
+              "name": "Relative Risk",
+              "JSON-LD Flag": "@id",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Key Text",
+                  "domain": "enum(>3, 2-3, <2, Unknown)",
+                  "required": true,
+                  "default": "Unknown"
+                },
+                {
+                  "name": "Tier",
+                  "domain": "enum(1,2,3,4,5,Not provided)"
+                },
+                {
+                  "name": "Notes",
+                  "domain": "string"
+                },
+                {
+                  "name": "References",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Reference",
+                      "unique": true,
+                      "index": true,
+                      "domain": "url",
+                      "Object Type": "ac:References",
+                      "identifier": true,
+                      "Relation to Object": "evidencedBy",
+                      "required": true
+                    }
+                  ],
+                  "category": true,
+                  "item list": true
+                }
+              ]
+            },
+            {
+              "name": "Expressivity Notes",
+              "JSON-LD Flag": "@id",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Key Text",
+                  "domain": "string",
+                  "required": true
+                },
+                {
+                  "name": "Tier",
+                  "domain": "enum(1,2,3,4,5,Not provided)"
+                },
+                {
+                  "name": "Notes",
+                  "domain": "string"
+                },
+                {
+                  "name": "References",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Reference",
+                      "unique": true,
+                      "index": true,
+                      "domain": "url",
+                      "Object Type": "ac:References",
+                      "identifier": true,
+                      "Relation to Object": "evidencedBy",
+                      "required": true
+                    }
+                  ],
+                  "category": true,
+                  "item list": true
+                }
+              ]
+            }
+          ],
+          "required": true
+        },
+        {
+          "name": "Acceptability of Intervention",
+          "domain": "[valueless]",
+          "fixed": true,
+          "category": true,
+          "properties": [
+            {
+              "name": "Nature of Intervention",
+              "JSON-LD Flag": "@id",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Key Text",
+                  "domain": "string",
+                  "required": true
+                },
+                {
+                  "name": "Notes",
+                  "domain": "string"
+                },
+                {
+                  "name": "References",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Reference",
+                      "unique": true,
+                      "index": true,
+                      "domain": "url",
+                      "Object Type": "ac:References",
+                      "identifier": true,
+                      "Relation to Object": "evidencedBy",
+                      "required": true
+                    }
+                  ],
+                  "category": true,
+                  "item list": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Condition Escape Detection",
+          "domain": "[valueless]",
+          "fixed": true,
+          "category": true,
+          "properties": [
+            {
+              "name": "Chance to Escape Clinical Detection",
+              "JSON-LD Flag": "@id",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Key Text",
+                  "domain": "string",
+                  "required": true
+                },
+                {
+                  "name": "Tier",
+                  "domain": "enum(1,2,3,4,5,Not provided)"
+                },
+                {
+                  "name": "Notes",
+                  "domain": "string"
+                },
+                {
+                  "name": "References",
+                  "domain": "[valueless]",
+                  "fixed": true,
+                  "items": [
+                    {
+                      "name": "Reference",
+                      "unique": true,
+                      "index": true,
+                      "domain": "url",
+                      "Object Type": "ac:References",
+                      "identifier": true,
+                      "Relation to Object": "evidencedBy",
+                      "required": true
+                    }
+                  ],
+                  "category": true,
+                  "item list": true
+                }
+              ]
+            }
+          ],
+          "required": true
+        }
+      ],
+      "required": true
+    },
+    {
+      "name": "Score",
+      "domain": "[valueless]",
+      "fixed": true,
+      "category": true,
+      "properties": [
+        {
+          "name": "Status",
+          "domain": "enum(Complete, Incomplete, Verified)",
+          "required": true,
+          "default": "Incomplete"
+        },
+        {
+          "name": "Final Scores",
+          "domain": "[valueless]",
+          "fixed": true,
+          "category": true,
+          "properties": [
+            {
+              "name": "Metadata",
+              "domain": "[valueless]",
+              "fixed": true,
+              "category": true,
+              "properties": [
+                {
+                  "name": "Media",
+                  "domain": "enum(call, email, other)",
+                  "default": "call"
+                },
+                {
+                  "name": "Date",
+                  "domain": "date"
+                },
+                {
+                  "name": "Scorers Present",
+                  "domain": "numItems",
+                  "items": [
+                    {
+                      "name": "Scorer",
+                      "unique": true,
+                      "index": true,
+                      "domain": "gbAccount",
+                      "identifier": true,
+                      "required": true
+                    }
+                  ],
+                  "item list": true
+                }
+              ]
+            },
+            {
+              "name": "Outcomes",
+              "domain": "numItems",
+              "items": [
+                {
+                  "name": "Outcome",
+                  "unique": true,
+                  "index": true,
+                  "domain": "string",
+                  "properties": [
+                    {
+                      "name": "Severity",
+                      "domain": "enum(Not Scored,0,1,2,3)",
+                      "properties": [
+                        {
+                          "name": "Notes",
+                          "domain": "string"
+                        }
+                      ],
+                      "required": true,
+                      "default": "Not Scored"
+                    },
+                    {
+                      "name": "Likelihood",
+                      "domain": "enum(Not Scored,0A,0B,0C,0D,0E,1A,1B,1C,1D,1E,2A,2B,2C,2D,2E,3A,3B,3C,3D,3E)",
+                      "properties": [
+                        {
+                          "name": "Notes",
+                          "domain": "string"
+                        }
+                      ],
+                      "required": true,
+                      "default": "Not Scored"
+                    },
+                    {
+                      "name": "Interventions",
+                      "domain": "numItems",
+                      "items": [
+                        {
+                          "name": "Intervention",
+                          "unique": true,
+                          "index": true,
+                          "domain": "string",
+                          "properties": [
+                            {
+                              "name": "Overall Score",
+                              "domain": "string"
+                            },
+                            {
+                              "name": "Effectiveness",
+                              "domain": "enum(Not Scored,0A,0B,0C,0D,0E,1A,1B,1C,1D,1E,2A,2B,2C,2D,2E,3A,3B,3C,3D,3E,INA,INB,INC,IND,INE)",
+                              "properties": [
+                                {
+                                  "name": "Notes",
+                                  "domain": "string"
+                                }
+                              ],
+                              "required": true,
+                              "default": "Not Scored"
+                            },
+                            {
+                              "name": "Nature Of Intervention",
+                              "domain": "enum(Not Scored,0,1,2,3)",
+                              "properties": [
+                                {
+                                  "name": "Notes",
+                                  "domain": "string"
+                                }
+                              ],
+                              "required": true,
+                              "default": "Not Scored"
+                            }
+                          ],
+                          "identifier": true,
+                          "required": true
+                        }
+                      ],
+                      "item list": true
+                    }
+                  ],
+                  "identifier": true,
+                  "required": true
+                }
+              ],
+              "item list": true
+            },
+            {
+              "name": "FinalScoreOfScorers",
+              "domain": "numItems",
+              "items": [
+                {
+                  "name": "FinalScoreOfScorer",
+                  "unique": true,
+                  "index": true,
+                  "domain": "gbAccount",
+                  "properties": [
+                    {
+                      "name": "First Name",
+                      "domain": "string",
+                      "Notes": "auto-filled by Genboree"
+                    },
+                    {
+                      "name": "Last Name",
+                      "domain": "string",
+                      "Notes": "auto-filled by Genboree"
+                    },
+                    {
+                      "name": "Outcomes",
+                      "domain": "numItems",
+                      "items": [
+                        {
+                          "name": "Outcome",
+                          "unique": true,
+                          "index": true,
+                          "domain": "string",
+                          "properties": [
+                            {
+                              "name": "Severity",
+                              "domain": "enum(Not Scored,0,1,2,3)",
+                              "properties": [
+                                {
+                                  "name": "Notes",
+                                  "domain": "string"
+                                }
+                              ],
+                              "required": true,
+                              "default": "Not Scored"
+                            },
+                            {
+                              "name": "Likelihood",
+                              "domain": "enum(Not Scored,0A,0B,0C,0D,0E,1A,1B,1C,1D,1E,2A,2B,2C,2D,2E,3A,3B,3C,3D,3E)",
+                              "properties": [
+                                {
+                                  "name": "Notes",
+                                  "domain": "string"
+                                }
+                              ],
+                              "required": true,
+                              "default": "Not Scored"
+                            },
+                            {
+                              "name": "Interventions",
+                              "domain": "numItems",
+                              "items": [
+                                {
+                                  "name": "Intervention",
+                                  "unique": true,
+                                  "index": true,
+                                  "domain": "string",
+                                  "properties": [
+                                    {
+                                      "name": "Effectiveness",
+                                      "domain": "enum(Not Scored,0A,0B,0C,0D,0E,1A,1B,1C,1D,1E,2A,2B,2C,2D,2E,3A,3B,3C,3D,3E,INA,INB,INC,IND,INE)",
+                                      "properties": [
+                                        {
+                                          "name": "Notes",
+                                          "domain": "string"
+                                        }
+                                      ],
+                                      "required": true,
+                                      "default": "Not Scored"
+                                    },
+                                    {
+                                      "name": "Nature Of Intervention",
+                                      "domain": "enum(Not Scored,0,1,2,3)",
+                                      "properties": [
+                                        {
+                                          "name": "Notes",
+                                          "domain": "string"
+                                        }
+                                      ],
+                                      "required": true,
+                                      "default": "Not Scored"
+                                    }
+                                  ],
+                                  "identifier": true,
+                                  "required": true
+                                }
+                              ],
+                              "item list": true
+                            }
+                          ],
+                          "identifier": true,
+                          "required": true
+                        }
+                      ],
+                      "item list": true
+                    }
+                  ],
+                  "identifier": true,
+                  "required": true
+                }
+              ],
+              "item list": true
+            }
+          ]
+        },
+        {
+          "name": "Scorers",
+          "domain": "numItems",
+          "items": [
+            {
+              "name": "Scorer",
+              "unique": true,
+              "index": true,
+              "domain": "gbAccount",
+              "properties": [
+                {
+                  "name": "First Name",
+                  "domain": "string",
+                  "Notes": "auto-filled by Genboree"
+                },
+                {
+                  "name": "Last Name",
+                  "domain": "string",
+                  "Notes": "auto-filled by Genboree"
+                },
+                {
+                  "name": "Status",
+                  "domain": "enum(Complete, Incomplete)",
+                  "required": true,
+                  "default": "Incomplete"
+                },
+                {
+                  "name": "Outcomes",
+                  "domain": "numItems",
+                  "items": [
+                    {
+                      "name": "Outcome",
+                      "unique": true,
+                      "index": true,
+                      "domain": "string",
+                      "properties": [
+                        {
+                          "name": "Severity",
+                          "domain": "enum(Not Scored,0,1,2,3)",
+                          "properties": [
+                            {
+                              "name": "Notes",
+                              "domain": "string"
+                            }
+                          ],
+                          "required": true,
+                          "default": "Not Scored"
+                        },
+                        {
+                          "name": "Likelihood",
+                          "domain": "enum(Not Scored,0A,0B,0C,0D,0E,1A,1B,1C,1D,1E,2A,2B,2C,2D,2E,3A,3B,3C,3D,3E)",
+                          "properties": [
+                            {
+                              "name": "Notes",
+                              "domain": "string"
+                            }
+                          ],
+                          "required": true,
+                          "default": "Not Scored"
+                        },
+                        {
+                          "name": "Interventions",
+                          "domain": "numItems",
+                          "items": [
+                            {
+                              "name": "Intervention",
+                              "unique": true,
+                              "index": true,
+                              "domain": "string",
+                              "properties": [
+                                {
+                                  "name": "Effectiveness",
+                                  "domain": "enum(Not Scored,0A,0B,0C,0D,0E,1A,1B,1C,1D,1E,2A,2B,2C,2D,2E,3A,3B,3C,3D,3E,INA,INB,INC,IND,INE)",
+                                  "properties": [
+                                    {
+                                      "name": "Notes",
+                                      "domain": "string"
+                                    }
+                                  ],
+                                  "required": true,
+                                  "default": "Not Scored"
+                                },
+                                {
+                                  "name": "Nature Of Intervention",
+                                  "domain": "enum(Not Scored,0,1,2,3)",
+                                  "properties": [
+                                    {
+                                      "name": "Notes",
+                                      "domain": "string"
+                                    }
+                                  ],
+                                  "required": true,
+                                  "default": "Not Scored"
+                                }
+                              ],
+                              "identifier": true,
+                              "required": true
+                            }
+                          ],
+                          "item list": true
+                        }
+                      ],
+                      "identifier": true,
+                      "required": true
+                    }
+                  ],
+                  "item list": true
+                }
+              ],
+              "identifier": true,
+              "required": true
+            }
+          ],
+          "item list": true
+        }
+      ],
+      "required": true
+    },
+    {
+      "name": "RefMetadata",
+      "domain": "numItems",
+      "items": [
+        {
+          "name": "Reference",
+          "unique": true,
+          "index": true,
+          "domain": "url",
+          "properties": [
+            {
+              "name": "RefExcerptFile",
+              "domain": "fileUrl"
+            }
+          ],
+          "identifier": true,
+          "required": true
+        }
+      ],
+      "item list": true
+    }
+  ],
+  "Object Type": "ac:ActionabilityDoc",
+  "comments": "Internal Doc ID. Also the \"Subject\", currently (this model may need explicit Subject)",
+  "identifier": true,
+  "required": true
+}

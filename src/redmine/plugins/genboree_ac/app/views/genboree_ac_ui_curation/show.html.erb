@@ -1,0 +1,53 @@
+
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'curation', :plugin => 'genboree_ac'%>
+    <%= stylesheet_link_tag 'differ.css', :plugin => 'genboree_ac'%>
+    <%= stylesheet_link_tag 'bootstrap-switch.min.css', :plugin => 'genboree_ac'%>
+<% end %>
+<% content_for :header_tags do %>
+    <script>
+      /* This is set in the controller. */
+      var projectId = '<%=@projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe%>' ;
+      var docIdentifier = '<%=@docIdentifier.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+      var kbMount = '<%=RedmineApp::Application.routes.default_scope[:path].to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+      var gbHost = '' ;
+      var gbGroup = '' ;
+      var gbKb = '';
+      var userRole = '<%=User.current.roles_for_project(Project.find(@projectId))[0].name.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+      var gbLogin = '<%= User.current.login ? User.current.login : 'anon'  %>' ;
+      var userFirstName = '<%= User.current.firstname ? User.current.firstname : "anon"  %>' ;
+      var userLastName = '<%= User.current.lastname ? User.current.lastname : "anon"  %>' ;
+      var acCurationColl = '' ;
+      var acRefColl = '';
+      var acOnetCollRsrcPath = '' ;
+    </script>
+    <%
+      if @genboreeAc.nil?
+    %>
+      <script>
+      </script>
+    <%
+      else
+    %>
+      <script>
+        gbHost = '<%=@genboreeAc.gbHost.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+        gbGroup = '<%=@genboreeAc.gbGroup.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+        gbKb = '<%=@genboreeAc.gbKb.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+        acCurationColl = '<%=@genboreeAc.actionabilityColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+        acRefColl = '<%=@genboreeAc.referencesColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+        acOnetCollRsrcPath = '<%=@genboreeAc.gbActOrphanetCollRsrcPath.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+        var litSearchSourceCfgJSON = '<%=@litSearchSourceJSON.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe%>' ;
+        var litSearchSourceCfg = JSON.parse(litSearchSourceCfgJSON) ;
+        <%= @userPermsJS %>
+      </script>
+    <%
+      end
+    %>
+    
+    <%= javascript_include_tag 'appLoader', :plugin => 'genboree_ac' %>
+    <%= javascript_include_tag 'helpers', :plugin => 'genboree_ac' %>
+    <%= javascript_include_tag 'bootstrap-switch.min.js', :plugin => 'genboree_ac' %>
+   <!--<%= javascript_include_tag 'bootstrap.min.js', :plugin => 'genboree_ac' %>-->
+<% end %>
+<script id="microloader" data-app="12345" type="text/javascript" src="../sencha/sencha-apps/curation/microloader.js"></script>
+<div  id="mainContainerPanelDiv" style="width: 92%;margin-top:20px;margin-bottom:30px;margin-left:50px;"></div>

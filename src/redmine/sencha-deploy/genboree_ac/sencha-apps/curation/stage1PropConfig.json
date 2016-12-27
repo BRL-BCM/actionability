@@ -1,0 +1,104 @@
+{ 
+  "data":  {
+    "formProps": {
+      "Actionability.Practice Guideline": {
+        "stageOneQuestionText": "Is there a practice guideline or systematic review for the genetic condition?",
+        "stageOneQuestionType": "boolean",
+        "stageOneQuestionWidth": 500,
+        "stageOneShowQIndex": true,
+        "bold": true
+      },
+      "Actionability.Result Actionable": {
+        "stageOneQuestionText": "Does the practice guideline or systematic review indicate that the result is actionable in one or more of the following ways?",
+        "stageOneQuestionType": "none",
+        "stageOneQuestionWidth": 600,
+        "stageOneShowQIndex": true,
+        "bold": true
+      },
+      "Actionability.Result Actionable.Patient Management": {
+        "stageOneQuestionText": "Patient Management",
+        "stageOneQuestionType": "boolean",
+        "stageOneQuestionWidth": 200,
+        "indent": true,
+        "cls": " fa fa-wheelchair "
+      },
+      "Actionability.Result Actionable.Surveillance or Screening": {
+        "stageOneQuestionText": "Surveillance or Screening",
+        "stageOneQuestionType": "boolean",
+        "stageOneQuestionWidth": 200,
+        "indent": true,
+        "cls": "fa fa-user-md"
+      },
+      "Actionability.Result Actionable.Family Management": {
+        "stageOneQuestionText": "Family Management",
+        "stageOneQuestionType": "boolean",
+        "stageOneQuestionWidth": 200,
+        "indent": true,
+        "cls": "fa fa-users"
+      },
+      "Actionability.Result Actionable.Circumstances to Avoid": {
+        "stageOneQuestionText": "Circumstances to Avoid",
+        "stageOneQuestionType": "boolean",
+        "stageOneQuestionWidth": 200,
+        "indent": true,
+        "cls": "fa fa-ban"
+      },
+      "Actionability.Result Actionable.Yes for 1 or more above": {
+        "stageOneQuestionText": "Yes for 1 or more above",
+        "stageOneQuestionType": "boolean",
+        "stageOneQuestionWidth": 200,
+        "indent": true,
+        "bold": true
+      },
+      "Actionability.Result Actionable in undiagnosed": {
+        "stageOneQuestionText": "Is the result actionable in an undiagnosed adult with the genetic condition?",
+        "stageOneQuestionType": "boolean",
+        "stageOneShowQIndex": true,
+        "stageOneQuestionWidth": 500,
+        "bold": true
+      },
+      "Penetrance.Moderate Penetrance Variant": {
+        "stageOneQuestionText": "Is there at least one known pathogenic variant with at least moderate penetrance (>=40%) or moderate relative risk (>=2) in any population?",
+        "stageOneQuestionType": "boolean",
+        "stageOneQuestionWidth": 500,
+        "stageOneShowQIndex": true,
+        "bold": true
+      },
+      "Significance of Disease.Important Health Problem": {
+        "stageOneQuestionText": "Is this condition an important health problem?",
+        "stageOneQuestionType": "boolean",
+        "stageOneQuestionWidth": 500,
+        "stageOneShowQIndex": true,
+        "bold": true
+      },
+      "Need for making exception": {
+        "stageOneQuestionText": "Is there a need to make an exception?",
+        "stageOneQuestionType": "boolean",
+        "stageOneQuestionWidth": 300,
+        "stageOneShowQIndex": true,
+        "bold": true
+      },
+      "Need for making exception.Exception Made": {
+        "stageOneQuestionText": "Has an exception been made?",
+        "stageOneQuestionType": "boolean",
+        "indent": true,
+        "stageOneQuestionWidth": 300,
+        "stageOneShowQIndex": true
+      },
+      "Need for making exception.Exception Made.Note why exception made": {
+        "stageOneQuestionText": "Why was an exception made?",
+        "stageOneQuestionType": "string",
+        "stageOneQuestionWidth": 300,
+        "indent": true,
+        "stageOneShowQIndex": true
+      },
+      "Notes": {
+        "stageOneQuestionText": "Additional Notes",
+        "stageOneQuestionType": "string",
+        "stageOneQuestionWidth": 300,
+        "stageOneShowQIndex": false,
+        "italic": true
+      }
+    }
+  }
+}

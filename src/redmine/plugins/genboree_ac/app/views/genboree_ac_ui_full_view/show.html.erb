@@ -1,0 +1,231 @@
+<%
+  renderError = false
+  if(@kbDoc)
+    modelHash = { :docModel => @docModel, :refModel => @refModel }
+    opts = { :trim => @trim, :detailed => @detailed, :twoCharNewline => '<div class="pgap">&nbsp;</div>' }
+    begin
+      # Core doc content via templates
+      templater = GenboreeAcTemplaters::FullviewTemplater.new(modelHash, opts)
+      docHtml = templater.docHtml(@kbDoc)
+      # Discover ref_%ID% strings in the order they appear in the doc
+      refIdsInDocAppearanceOrder = docHtml.scan( /ref_%([^%]+)%/ )
+      # Non-redundant order
+      refIdsInDocAppearanceOrder.flatten!
+      refIdsInDocAppearanceOrder.uniq!
+
+      # BEFORE RENDERING the References/Biolography section, sort @refDocs by their index in refIdsInDocAppearanceOrder
+      @refDocs.sort! { |aa, bb|
+        aaIdx = refIdsInDocAppearanceOrder.index( aa.getRootPropVal() )
+        bbIdx = refIdsInDocAppearanceOrder.index( bb.getRootPropVal() )
+        aaIdx <=> bbIdx
+      }
+
+      # Produce html for @refDocs using templates
+      refHtmls = templater.refsHtml(@refDocs)
+
+      # Replace all ref_%ID% place holders in html with ref_IDX
+      [docHtml, refHtmls].each { |html|
+        html.gsub!(/(ref_|ref_displ_)%([^%]+)%/) { |mm|
+          idx = refIdsInDocAppearanceOrder.index( $2 )
+          idx += 1
+          "#{$1 == 'ref_' ? "ref_#{idx}" : idx}"
+        }
+      }
+
+      renderError = false
+    rescue => err
+      renderError = true
+      docHtml = %Q^<strong>ERROR:</strong> Rendering the Actionability document with id <strong>'#{@docIdentifier.to_s}'</strong> failed. Cannot it display it here.<br>Possibly there is no <strong>'#{@docIdentifier.to_s}'</strong> in the database, or has content incompatible with the renderer.</span>^
+      refHtmls = []
+      $stderr.debugPuts(__FILE__, __method__, "ERROR", "Exception rendering doc using templates:\n  Error class: #{err.class}\n  Error message:  #{err.message.inspect}\n  Error trace:\n#{err.backtrace.join("\n")}\n\n")
+    end
+  else
+    renderError = true
+    refHtmls = []
+    docHtml = %Q^<strong>ERROR:</strong> #{@viewMsg or "Failed to load document data, please contact an Administrator to help track down cause."}^
+  end
+%>
+<% content_for :header_tags do %>
+    <script type="text/javascript">
+      var kbMount = "<%= @kbMount %>" ;
+      /* This is set in the controller. */
+      var projectId = '<%= @projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+      // Menu click -> Scroll-to (animated)
+      $(document).ready( function() {
+        $("#homeBtn").click(function() { $('html, body').animate( { scrollTop: $("#page").offset().top - $('#topmenu').height() }, 500) ; }) ;
+        $("#stage1Btn").click(function() { $('html, body').animate( { scrollTop: $("#stage1").offset().top - $('#topmenu').height() }, 1000) ; }) ;
+        $("#stage2Btn").click(function() { $('html, body').animate( { scrollTop: $("#stage2").offset().top - $('#topmenu').height() }, 1000) ; }) ;
+        $("#scoreBtn").click(function() { $('html, body').animate( { scrollTop: $("#scoring").offset().top - $('#topmenu').height() }, 1000) ; }) ;
+        $("#refsBtn").click(function() { $('html, body').animate( { scrollTop: $("#references").offset().top - $('#topmenu').height() }, 1000) ; }) ;
+        $("#litSearchBtn").click(function() { $('html, body').animate( { scrollTop: $("#litSearch").offset().top - $('#topmenu').height() }, 1000) ; }) ;
+        // Reverse menu-highlight when mouse-over section
+        var stg = $(".stage1") ;
+        stg.mouseenter( function(e) { $("#stage1Btn").addClass('item_hover') } ) ;
+        stg.mouseleave( function(e) { $("#stage1Btn").removeClass('item_hover') } ) ;
+        stg = $(".stage2") ;
+        stg.mouseenter( function(e) { $("#stage2Btn").addClass('item_hover') } ) ;
+        stg.mouseleave( function(e) { $("#stage2Btn").removeClass('item_hover') } ) ;
+        stg = $(".scoring") ;
+        stg.mouseenter( function(e) { $("#scoreBtn").addClass('item_hover') } ) ;
+        stg.mouseleave( function(e) { $("#scoreBtn").removeClass('item_hover') } ) ;
+        stg = $(".litSearch") ;
+        stg.mouseenter( function(e) { $("#litSearchBtn").addClass('item_hover') } ) ;
+        stg.mouseleave( function(e) { $("#litSearchBtn").removeClass('item_hover') } ) ;
+        stg = $(".references") ;
+        stg.mouseenter( function(e) { $("#refsBtn").addClass('item_hover') } ) ;
+        stg.mouseleave( function(e) { $("#refsBtn").removeClass('item_hover') } ) ;
+
+        // Nice scroll to References
+        var refLinks = $("a[href^=\"#ref\"]") ; // css select all <a> tags whose href attribute begins with "#ref"
+        refLinks.each(function(ii) {
+          var jRefLink = $(refLinks[ii]) ;
+          var targ = jRefLink.attr("href") ;
+          jRefLink.click(function() { $('html, body').animate( { scrollTop: $(targ).offset().top - $('#topmenu').height() }, 500) ; }) ;
+        }) ;
+
+        // Init bootstrap tooltips
+        // $('[data-toggle="tooltip"]').tooltip() ;
+
+        // Popovers (kind of tooltip, sorta)
+        var poConfBase = {
+          html : true,
+          container: "body",
+          trigger : "focus",
+          placement : "top",
+          template : '<div class="scoreInfo gbac popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+        } ;
+
+        var poConfs = {
+
+          "severityScoring" : {
+            title : "Severity Scoring",
+            content : "<div>Outcomes are scored by <i>severity of the disease</i> using the following score values:</div><div class=\"scoreDesc\"><div><span class=\"scoreVal\">0</span> = Minimal or No Morbidity</div><div><span class=\"scoreVal\">1</span> = Modest Morbidity</div><div><span class=\"scoreVal\">2</span> = Major Morbidity or Possible Death</div><div><span class=\"scoreVal\">3</span> = Sudden Death</div></div>"
+          },
+          "likelihoodScoring" : {
+            title : "Likelihood Scoring",
+            content : "<div>Outcomes are scored using numerical scores for the <i>likelihood of the disease</i>:</div><div class=\"scoreDesc\"><div><span class=\"scoreVal\">0</span> = &le;1% or Unknown</div><div><span class=\"scoreVal\">1</span> = 1-4%</div><div><span class=\"scoreVal\">2</span> = 5-39%</div><span class=\"scoreVal\">3</span> = &ge;40%</div></div><div>While alphabetic scores indicate the <i>level of evidence</i>:</div><div class=\"scoreDesc\"><div><span class=\"scoreVal\">A</span> = Substantial evidence (Tier 1):</div><div><span class=\"scoreVal\">B</span> = Moderate evidence (Tier 2):</div><div><span class=\"scoreVal\">C</span> = Minimal evidence (Tier 3 or Tier 4):</div><div><span class=\"scoreVal\">D</span> = Controversial or poor evidence (no evidence from systematic search available):</div><div><span class=\"scoreVal\">E</span>= Non-systematically identified evidence (Tier 5)</div></div>"
+          },
+          "effectivenessScoring" : {
+            title : "Effectiveness Scoring",
+            content : "<div>Interventions are scored using numerical scores for the <i>effectiveness of the intervention</i>:</div><div class=\"scoreDesc\"><div><span class=\"scoreVal\">0</span> = Controversial or unknown effectiveness</div><div><span class=\"scoreVal\">1</span> = Minimally effective</div><div><span class=\"scoreVal\">2</span> = Moderately effective</div><div><span class=\"scoreVal\">3</span> = Highly effective</div><div><span class=\"scoreVal\">IN</span> = Ineffective/No intervention (do not score the remaining categories)</div></div><div>While alphabetic scores indicate the <i>level of evidence</i>:</div><div class=\"scoreDesc\"><div><span class=\"scoreVal\">A</span> = Substantial evidence (Tier 1)</div><div><span class=\"scoreVal\">B</span> = Moderate evidence (Tier 2)</div><div><span class=\"scoreVal\">C</span> = Minimal evidence (Tier 3 or Tier 4)</div><div><span class=\"scoreVal\">D</span> = Controversial or poor evidence (no evidence from systematic search available)</div><div><span class=\"scoreVal\">E</span> = Non-systematically identified evidence (Tier 5)</div></div>"
+          },
+          "noiScoring" : {
+            title : "Nature of Intervention (NOI) Scoring",
+            content : "<div>Interventions are scored numerically to indicate the <i>nature of the intervention</i>:</div><div class=\"scoreDesc\"><div><span class=\"scoreVal\">0</span> = High risk, poor acceptability, and intensive intervention (e.g. removal of an organ with very high associated morbidity)</div><div><span class=\"scoreVal\">1</span> = Greater risk, less acceptable, and substantial intervention (e.g. prophylactic surgery with limited morbidity to remove target organs)</div><div><span class=\"scoreVal\">2</span> = Moderate risk, moderately acceptable, and intense interventions (e.g. invasive screening tests, modestly burdensome diet modifications)</div><div><span class=\"scoreVal\">3</span> = Low risk, medically acceptable, and low intensity interventions (e.g. non-invasive screening, medications with low side effects)</div></div>"
+          },
+          "overallScoring" : {
+            title : "Overall Score",
+            content : "<div>The overall score of each intervention is comprised of:</div><div class=\"scoreDesc\"><div><span class=\"scoreVal\">(a)</span> the sum of the numerical scores of the outcome plus the numerical scores of the intervention itself ; </div><div><span class=\"scoreVal\">(b)</span> the level of evidence code for the outcome's likelihood ; and</div><div><span class=\"scoreVal\">(c)</span> the level of evidence code for the intervention's effectiveness.</div></div>"
+          }
+        } ;
+        // Select all elements acting as popover triggers
+        var poTriggers = $('.poTrigger') ;
+        poTriggers.each( function(idx) {
+          var triggerElem = $(this) ;
+          var parentContainer = triggerElem.parent() ;
+          var poConf = poConfs[ parentContainer[0].id ] ;
+          if(poConf) {
+            $.extend(poConf, poConfBase) ;
+            triggerElem.popover(poConf) ;
+            triggerElem.popover() ;
+          }
+//          triggerElem.on('click', function() {
+//            // hide all showing popovers (one at a time), then show the one we care about
+//            $(".poTrigger").each( function (idx) { $(this).popover('hide') } ) ;
+//            // Use the two-show trick to deal with odd initialize problem
+//            $(this ).popover('toggle') ;
+//          }) ;
+        }) ;
+        // Opt-in enable all popovers spec'd in html
+        // $(function () {
+        //   $('[data-toggle="popover"]').popover()
+        // }) ;
+      }) ;
+      // TEST/EXPLORE: User permission map
+      <%# = @userPermsJS %>
+    </script>
+
+    <%= stylesheet_link_tag 'fullView', :media => 'all', :plugin => 'genboree_ac' %>
+    <%= javascript_include_tag 'helpers', :plugin => 'genboree_ac' %>
+<% end %>
+
+<!-- PAGE -->
+<div id="page" class="page-container">
+
+  <!-- MENU (adds from right) -->
+  <div id="topmenu">
+    <%# Insert static header file, if available %>
+    <%
+      headerFile = @genboreeAc.headerIncludeFileLoc.to_s.strip
+      if(File.exist?(headerFile))
+    %>
+        <%= File.read(headerFile).html_safe %>
+    <%
+      end
+    %>
+
+    <div id="homeBtn" class="item">Home</div>
+    <div id="stage1Btn" class="item">Stage 1</div>
+    <div id="stage2Btn" class="item">Stage 2</div>
+    <div id="scoreBtn" class="item">Scoring</div>
+    <div id="litSearchBtn" class="item">Lit. Search</div>
+    <div id="refsBtn" class="item">References</div>
+    <div id="logoutBtn" class="iconBtn logout" title="Logout">
+      <span class="glyphicon glyphicon-off" onclick="logout()" ></span>
+    </div>
+    <%# DEFERRED. Proposals under review. %>
+    <% if(false) %>
+      <div id="discussBtn" class="iconBtn history inactive" title="Document History (coming soon)">
+        <span class="fa fa-history"></span>
+      </div>
+      <div id="discussBtn" class="iconBtn discuss inactive" title="Discuss This Document (proposed)">
+        <span class="fa fa-comment"></span>
+      </div>
+    <% end %>
+    <% if(User.current.allowed_to?(:gbac_view_stg2_summary_report, @project)) %>
+        <div id="stg2SummaryRpt" class="iconBtn stg1RuleOutRpt" title="View Stage 2 - Summary Report">
+          <a href="<%= @kbMount %>/projects/<%= @projectId %>/genboree_ac/ui/stg2SummaryRpt?doc=<%= @docIdentifier %>">
+            <span class="fa fa-file-text"></span>
+          </a>
+        </div>
+    <% end %>
+    <% if(User.current.allowed_to?(:gbac_view_stg1_rule_out_report, @project)) %>
+        <div id="stg1RuleOutRpttBtn" class="iconBtn stg1RuleOutRpt" title="View Stage 1 - Rule Out Report">
+          <a href="<%= @kbMount %>/projects/<%= @projectId %>/genboree_ac/ui/stg1RuleOutRpt?doc=<%= @docIdentifier %>">
+            <span class="fa fa-list-ul"></span>
+          </a>
+        </div>
+    <% end %>
+    <% if(User.current.allowed_to?(:gbac_view_curation, @project)) %>
+      <div id="editBtn" class="iconBtn edit" title="Edit Document">
+        <a href="<%= @kbMount %>/projects/<%= @projectId %>/genboree_ac/ui/curation?doc=<%= @docIdentifier %>">
+          <span class="glyphicon glyphicon-edit"></span>
+        </a>
+      </div>
+    <% end %>
+    <% if(User.current.allowed_to?(:gbac_view_entry, @project)) %>
+      <div id="entryBtn" class="iconBtn entry" title="Back to Document List/Search">
+        <a href="<%= @kbMount %>/projects/<%= @projectId %>/genboree_ac/ui/entry">
+          <span class="glyphicon glyphicon-list-alt"></span>
+        </a>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- DOC RENDER -->
+  <div id="doc">
+    <!-- DOC CONTENT -->
+    <% if(renderError) %>
+        <%= render :partial => "shared/bsAlert", :locals => { :msgHtml => docHtml }, :object => { :type => 'danger', :classes => 'flashMsg' } %>
+    <% else %>
+      <%= docHtml.html_safe %>
+      <!-- REFERENCES CONTENT -->
+      <% if(refHtmls and !refHtmls.empty?) %>
+        <div id="references" class="references">
+          <span class="lvl2 title">References</span>
+          <%= refHtmls.html_safe %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,500 @@
+/* PAGE ITSELF */
+div#content {
+  background-color: white ;
+  font-family: Verdana, arial, helvetica ;
+  margin: 0px 0px 30px 0px ;
+  padding: 0;
+}
+#page {
+  padding-left: 50px ;
+  /* padding-right: 50px ; */
+  max-width: 94% ;
+}
+
+/* ALL LINKS */
+a {
+  color: #163e73 !important ; /* important, so applies to :hover, :visited etc too */
+}
+
+/* GENERIC PAGE-WIDE sub/super AS SAFE CSS */
+.sub, .sup {
+  font-size: 0.8em ;
+  line-height: 0;
+  /* position: relative; */
+}
+.sup {
+  vertical-align: super ;
+}
+.sub {
+  /* bottom: -0.25em; */
+}
+
+/* GENERIC PAGE-WIDE popover theming */
+.gbac .popover-title {
+  background-color: #3b6db0 ;
+  font-weight: bold ;
+  color: white ;
+}
+.gbac .popover-content {
+  color: black ;
+  font-size: 0.88em ;
+}
+
+/* TOP-MENU */
+#topmenu {
+  top: 0px ;
+  left: 0px ;
+  position: fixed ;
+  width: 100% ;
+  background-color: #4A89DC ;
+  clear: both ;
+}
+#topmenu .item {
+  background-color: #4A89DC ;
+  color: white ;
+  list-style-type: none ;
+  display: inline-block ;
+  text-align: center ;
+  font-weight: bold ;
+  padding:  14px 16px 14px 16px ;
+  transition: background-color 0.75s ease-out ;
+  cursor: pointer ;
+  margin-top: 2px ;
+}
+#topmenu .item:hover {
+  background-color: white ;
+  color: #4A89DC ;
+}
+#topmenu .item a {
+  text-decoration: none ;
+  color: inherit !important ;
+}
+#topmenu .item a:hover {
+  text-decoration: none ;
+  color: inherit !important ;
+}
+#topmenu .item_hover { /* For reverse highlight of menu when hovering section; can't activate CSS hover event from javascript */
+  background-color: white ;
+  color: #4A89DC ;
+}
+#topmenu .iconBtn {
+  float: right ;
+  color: white ;
+  font-size: 22px ;
+  margin: 5px 10px 5px 5px ;
+  padding: 5px 0px 5px 0px ;
+  cursor: pointer ;
+}
+#topmenu .iconBtn:hover {
+  color: black ;
+}
+#topmenu .iconBtn a {
+  color: white !important ;
+}
+#topmenu .iconBtn a:hover {
+  color: black !important ;
+}
+#topmenu .iconBtn.inactive {
+  color: #6da6eb !important;
+}
+#topmenu .iconBtn.discuss {
+  margin-top: 2px !important ;
+}
+#topmenu .iconBtn.stg1RuleOutRpt {
+  margin-top: 3px !important ;
+}
+#topmenu .iconBtn.history {
+  margin-top: 3px !important ;
+}
+
+/* Arrange to remove menubar when printing */
+@media print {
+  #topmenu {
+    display: none ;
+  }
+}
+
+/* ALERTS */
+.alert.topWarning {
+  margin-top : 60px;
+}
+
+/* DOC RENDER */
+#doc {
+  margin-top: 200px ; /* Should match AT LEAST #topmenu height for sticky effect */
+}
+
+/* GENERIC */
+.missing {
+  font-style: italic ;
+}
+
+/* TITLES & HEADINGS within the doc. Full control, rather than h1/h2/etc */
+.lvl1 {
+  color: #3078D7 ;
+  font-size: 22px ;
+  font-weight: bold ;
+  display: inline-block ;
+  border-bottom: 2px solid #3078D7 ;
+  width: 98% ;
+  margin: 8px 0px 8px 8px ;
+}
+.lvl2 {
+  color: #3078D7 ;
+  font-size: 20px ;
+  font-weight: bold ;
+  display: inline-block ;
+  border-bottom: 1px solid #3078D7 ;
+  width: 98% ;
+  margin: 20px 0px 8px 8px ;
+}
+.lvl3 {
+  color: #5D9CEC ;
+  font-size: 18px ;
+  font-weight: bold ;
+  display: inline-block ;
+  width: 98% ;
+  margin: 12px 0px 8px 0px ;
+}
+.lvl4 {
+  color: #5D9CEC ;
+  font-size: 16px ;
+  font-weight: bold ;
+  display: inline-block ;
+  width: 98% ;
+  margin: 8px 0px 4px 0px ;
+}
+
+/* STAGES - "section" & "subSection" */
+.section {
+  margin-left: 8px ;
+}
+.subSection {
+  margin-left: 0px ;
+  margin-bottom: 10px ;
+}
+.section div.pgap {
+  line-height: 0.5em ;
+}
+
+/* Displaying non-static info within titles/headings */
+.title {
+  font-weight: bold ;
+}
+.title .status {
+  vertical-align: super ;
+  font-size: 0.6em ;
+  color: gray ;
+}
+.title .value {
+  color: black ;
+}
+
+.title.lvl1 {
+  display: block ;
+}
+.title.lvl2 {
+  display: block ;
+}
+.title.lvl3 {
+  display: block ;
+}
+.title.lvl4 {
+  display: block ;
+}
+
+/* KEY-TEXT - displaying section key text ; the "meat" of the section's content */
+.keytext {
+  margin-top: 10px ;
+  margin-bottom: 5px ;
+}
+.subSection .keytext {
+  margin-top: 5px ;
+}
+
+/* KEY-TEXT "attributes/metadata" */
+.attrs {
+  margin-bottom: 10px ;
+}
+.attr {
+  margin-left: 14px ;
+  font-size: 0.9em ;
+  text-indent: -16px ;
+  padding-left: 16px ;
+}
+.attr .name {
+  font-weight: bold ;
+}
+
+.tiered.content {
+  margin-left: 0px ;
+}
+.tiered .itemLabel {
+  color: #5D9CEC ;
+  font-weight: bold ;
+}
+.tier .name {
+  font-weight : bold;
+}
+
+ul.values.list {
+  margin: 0px 0px 0px 0px ;
+  padding-left: 16px ;
+}
+ul.values.list li {
+  list-style-type: none ;
+}
+
+/* INLINE REFS */
+.refNum {
+  font-weight: bold ;
+}
+
+/* LITERATURE SOURCES TABLE */
+table.litSources {
+  margin-left: 20px ;
+  padding-left: 20px ;
+  padding-right: 20px ;
+  border-collapse: collapse ;
+  border-spacing: 0 ;
+  border: 1px solid #4A89DC ;
+  width: 92% ;
+  font-size: 1.05vw ; /* 1v == 1% of width(w) or height(h); __auto-scale the font!__ */
+}
+table.litSources td {
+  padding: 5px 5px 5px 5px ;
+}
+table.litSources .header {
+  background-color: #4A89DC ;
+  color: white ;
+}
+table.litSources .header td {
+  padding-top: 10px ;
+  padding-bottom: 10px ;
+  font-weight: bold ;
+}
+table.litSources .search-label {
+  width: 10% ;
+}
+table.litSources .search {
+  width: 74% ;
+}
+table.litSources .hits {
+  width: 6% ;
+  text-align: center ;
+}
+table.litSources .date {
+  width: 10% ;
+  text-align: center ;
+}
+table.litSources .subHeader {
+  background-color: #dddddd ;
+  color: black ;
+}
+table.litSources .subHeader td {
+  padding-top: 5px ;
+  padding-bottom: 5px ;
+}
+
+table.litSources .search.value {
+  font-family: Consolas, monospace ;
+  font-size: 0.96em ;
+  text-indent: -30px ;
+  padding-left: 35px ;
+}
+
+table.litSources .search.value a.externalLink {
+  text-indent: 0 ;
+  padding-left: 0 ;
+}
+
+/* Special indented block. Not formal "section" or "subSection". e.g. subordinate questions in Stage 1 */
+.depth2 {
+  margin-left: 50px ;
+}
+
+/* STAGE 1 - QUESTIONS & ANSWERS */
+.qna {
+  margin-left: 16px ;
+  margin-bottom: 8px ;
+  text-indent: -24px ;
+  padding-left: 24px ;
+}
+.answer {
+  /* font-family: Consolas,"Andale Mono", Lucidatypewriter, Courier, Fixed, monospace ; */
+  font-family: Avantgarde, "Gill Sans", Verdanda, Helvetica, sans-serif ;
+  font-weight: bold ;
+  margin-left: 8px ;
+}
+.yes {
+  color : forestgreen ;
+}
+.no {
+  color : darkred ;
+}
+
+/* TABLE - defaults */
+.table {
+  display: table ;
+  border-collapse: collapse ;
+  border-spacing: 0 ;
+  border: 1px solid #4A89DC ;
+  font-size: 1.05vw ; /* 1v == 1% of width(w) or height(h); __auto-scale the font!__ */
+  margin: 0px 0px 0px 20px !important ;
+}
+.table .row {
+  display: table-row ;
+}
+.table .row:after, .row:before {
+  content: none ;
+}
+.table .cell {
+  display: table-cell ;
+  padding: 5px 5px 5px 5px ;
+}
+.table .header.row .cell {
+  background-color: #4A89DC ;
+  color: white ;
+  font-weight: bold ;
+}
+.table .header.row .cell a { /* even anchors within such cells */
+  background-color : #4A89DC;
+  color            : white !important;
+  font-weight      : bold;
+}
+
+/* OUTCOME INTERVENTION TABLE - overrides */
+.table.ois {
+  margin-left: 20px ;
+  padding-left: 20px ;
+  padding-right: 20px ;
+  width: 92% ;
+}
+.table.ois .cell.outcome {
+  width: 40% ;
+  text-indent: -30px ;
+  padding-left: 35px ;
+}
+.table.ois .cell.intervention {
+  width: 60% ;
+  text-indent: -30px ;
+  padding-left: 35px ;
+}
+.table.ois .row.data.outcome {
+  border-bottom: 1px solid lightgray !important ;
+}
+.table.ois .row.data.outcome:last-child {
+  border-bottom: none !important ;
+}
+.table.ois .row.data.intervention {
+}
+.table.ois .row.data.intervention:last-child {
+}
+
+/* FINAL-SCORES TABLE - overrides - needs coordinated cell (column) widths */
+.poTrigger {
+  cursor : pointer;
+}
+.scoreDesc {
+  margin-left: 1em ;
+}
+.scoreDesc div {
+  text-indent: -2em ;
+  padding-left: 2em ;
+}
+.scoreVal {
+  font-weight : bold ;
+}
+
+div.scores {
+  border-collapse: collapse;
+  border-spacing: 0px;
+  border: 1px solid rgb(74, 137, 220);
+  font-size: 1.05vw;
+}
+
+.scores .col {
+  padding: 3px ;
+  position: inherit !important ;
+}
+.scores .header.row {
+  background-color: #4A89DC ;
+  color: white ;
+  font-weight: bold ;
+}
+.scores .header.row a { /* even anchors within such cells */
+  background-color : #4A89DC;
+  color            : white !important;
+  font-weight      : bold;
+}
+.scores .header .col {
+  white-space : nowrap ;
+}
+.scores .row.wrapper {
+  padding: 0px ;
+  margin-left: 0;
+  margin-right: 0;
+}
+.scores .outcome.row {
+  border-bottom: 1px solid black !important ;
+}
+.scores .outcome.row:last-child {
+  border-bottom: none !important ;
+}
+.scores .intervention.row {
+  border-bottom: 1px solid lightgray ;
+}
+.scores .intervention.row:last-child {
+  border-bottom: none !important ;
+}
+
+.popover.scoreInfo {
+  max-width: 400px ;
+}
+
+/* REFERENCE LIST */
+.references .table {
+  display: table;
+  border: none ;
+  font-size: 1.05vw;
+  margin-left: 0 !important ;
+}
+
+.ref.section {
+  margin: 5px 0px 5px 8px ;
+}
+.broken {
+  /* color: red ; */
+}
+.ref.section .idx {
+  font-weight: bold ;
+  margin-right: 0.4em ;
+}
+.ref.section .refNum.cell {
+  min-width: 2em ;
+  width: 2em ;
+  max-width: 3em ;
+}
+.ref.section .title {
+  font-style: italic ;
+  font-weight : normal ;
+}
+.ref.section .journal {
+  text-decoration: underline ;
+}
+.ref.section .year .value {
+  font-weight: bold ;
+}
+.ref.section .link {
+  /* font-variant: super ; */
+  vertical-align: super ;
+  font-size: 0.88em ;
+  color: gray ;
+  font-weight: bold ;
+}
+.ref.section .link a {
+  text-decoration: none !important ;
+}
+.ref.section a.link.fa-external-link {
+  color: blue !important ;
+}

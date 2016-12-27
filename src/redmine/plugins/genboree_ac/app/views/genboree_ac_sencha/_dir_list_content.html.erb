@@ -1,0 +1,38 @@
+<%
+  @tocFiles.sort { |aa, bb|
+    retVal = (aa[:kind].to_s <=> bb[:kind].to_s)
+    if(retVal == 0)
+      retVal = (aa[:rsrcPath].downcase <=> bb[:rsrcPath].downcase)
+      if(retVal == 0)
+        retVal = (aa[:rsrcPath] <=> bb[:rsrcPath])
+      end
+    end
+    retVal
+  }.each { |item|
+    tr_id = Digest::MD5.hexdigest(item[:rsrcPath])
+    entPath = Redmine::CodesetUtil.replace_invalid_utf8(item[:rsrcPath])
+    entName = File.basename(entPath)
+    entIsDir = (item[:kind] == :dir)
+    entSize  = item[:size]
+    entMtime = item[:mtime]
+%>
+    <tr id="<%= tr_id %>" class="<%= h params[:parent_id] %> rawcontent <%= item[:kind] %>">
+      <td class="filename entity">
+        <%
+          if(entIsDir)
+            entName = entName.chomp('/') << '/'
+          end
+        %>
+        <%= link_to(
+              h(entName),
+              genboree_ac_sencha_link_path( :id => @project, :path => entPath ),
+              {
+                :class => (entIsDir ? 'icon icon-folder' : "icon icon-file #{Redmine::MimeType.css_class_of(entPath)}")
+              }
+            )
+        %>
+      </td>
+      <td class="size"><%= (entSize ? number_to_human_size(entSize) : "n/a") %></td>
+      <td class="timestamp"><%= (entMtime.is_a?(Time) ? entMtime.to_s(:db) : "n/a") %></td>
+    </tr>
+<% } %>

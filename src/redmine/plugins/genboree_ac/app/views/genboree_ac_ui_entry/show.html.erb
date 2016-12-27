@@ -1,0 +1,49 @@
+<% content_for :header_tags do %>
+  <%
+    projectId = @projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ')
+
+  %>
+    <base href="<%=@kbMount%>/projects/<%=projectId%>/genboree_ac/ui/entry>">
+    <%= stylesheet_link_tag 'entry', :plugin => 'genboree_ac'%>
+<% end %>
+
+<% content_for :header_tags do %>
+    <script>
+        /* This is set in the controller. */
+        var projectId = '<%=@projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe%>' ;
+        var docIdentifier = '<%=@docIdentifier.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+        var kbMount = '<%=@kbMount%>' ;
+        var gbHost = '' ;
+        var gbGroup = '' ;
+        var gbKb = '';
+        var userRole = '<%=User.current.roles_for_project(Project.find(@projectId))[0].name.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+        var gbLogin = '<%= User.current.login ? User.current.login.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe : 'anon'  %>' ;
+        var acCurationColl = '' ;
+        var acRefColl = '';
+        var acGenesColl = '';
+    </script>
+    <%
+        if @genboreeAc.nil?
+    %>
+        <script>
+        </script>
+    <%
+        else
+    %>
+        <script>
+            gbHost = '<%=@genboreeAc.gbHost.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+            gbGroup = '<%=@genboreeAc.gbGroup.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+            gbKb = '<%=@genboreeAc.gbKb.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+            acCurationColl = '<%=@genboreeAc.actionabilityColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+            acRefColl = '<%=@genboreeAc.referencesColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+            acGenesColl = '<%=@genboreeAc.genesColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+            <%= @userPermsJS %>
+        </script>
+    <%
+        end
+    %>
+  <%= javascript_include_tag 'appLoader', :plugin => 'genboree_ac' %>
+  <%= javascript_include_tag 'helpers', :plugin => 'genboree_ac' %>
+<% end %>
+<script id="microloader" data-app="12345" type="text/javascript" src="../sencha/sencha-apps/entry/microloader.js"></script>
+<div  id="mainContainerPanelDiv" style="width: 92%;margin-top:20px;margin-bottom:30px;margin-left:50px;"></div>
