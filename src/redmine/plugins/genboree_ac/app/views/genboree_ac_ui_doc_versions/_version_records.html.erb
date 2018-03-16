@@ -1,0 +1,118 @@
+<%
+  rowCls = "row value-row"
+  rowIdx = 0
+  @viewObj.each { |verObj|
+    # The version number or count for this doc. 1, 2, 3, 4, 5 ... not internal Kb Version number.
+    relativeDocVerNum = ( @totalVers - @skip - rowIdx )
+    verNum = verObj['versionNum']
+    stage1Status = verObj['stage1Status']
+    docStatus = verObj["docStatus"]
+    # Detemine releaseVal to display
+    #$stderr.debugPuts(__FILE__, __method__, 'DEBUG', "verObj:\n\n#{JSON.pretty_generate(verObj) rescue verObj.inspect}\n\nnextVerObj:\n\n#{JSON.pretty_generate(@viewObj[count+1]) rescue @viewObj[count+1].inspect}")
+    if( verObj['releaseVer'] )
+      # Is this the FIRST record (when going in inverse order of course) that has this release?
+      # * Just need to check the next record (previous version when going in inverse order) to see if it's the same
+      nextVerObj = @viewObj[rowIdx+1]
+      if( nextVerObj )
+        if( verObj['releaseVer'] == nextVerObj['releaseVer'] )
+          # No, not the first. So don't repeat it.
+          releaseVal = nil
+        else # Yes, the next record (previous version) has a different releaseVer value
+          releaseVal = verObj['releaseVer']
+        end
+      else # no next version record to check, so yes it's the first record that has this
+        releaseVal = verObj['releaseVer']
+      end
+    else # doesn't have a Releaes prop val
+      releaseVal = "N/A"
+    end
+
+    date = verObj['date']
+    numOutcomes = verObj['numOutcomes']
+    numInterventions = verObj['numInterventions']
+    guidelines = verObj['guidelines']
+
+    #linkPrefix = (@releaseKB ? "clingen-actionability-release?": "clingen-actionability?")
+    stg1Link = "ui/stg1RuleOutRpt?doc=#{@docIdentifier}&version=#{verNum}"
+    stg2Link = "ui/stg2SummaryRpt?doc=#{@docIdentifier}&version=#{verNum}"
+
+%>
+  <div class="<%= rowCls %> <%= 'released' if(releaseVal) %>" data-version-num="<%=verNum%>">
+    <%# Version column if displayed %>
+    <% unless( @settingsRec.isAcReleaseTrack ) %>
+      <div class="col-xs-12 <%= @colSizes[:md][:version] %> col version text-center">
+        <span class="value"><%= relativeDocVerNum %></span>
+        <%# ICONS - NEXT TO VERSION FOR CURATION TRACK %>
+        <%# If this is the curation track, we're looking at versions/edits, not formal releases. Icons let you view the versions. %>
+        <% unless( @settingsRec.isAcReleaseTrack ) %>
+          <%# Show stage 1 report link icon IFF user has permission to view it %>
+          <% if( userAllowed?( :gbac_view_stg1_rule_out_report ) ) %>
+            <a href="<%=stg1Link%>" data-trigger="hover" data-toggle="tooltip" title="View Stage1 report" class="report-link"><i class="fa fa-list-ul"></i></a>
+          <% end %>
+          <%# Show stage 2 report link icon IFF user has permission to view it %>
+          <% if( userAllowed?( :gbac_view_stg2_summary_report ) and stage1Status != "Failed" ) %>
+            <a href="<%=stg2Link%>" data-trigger="hover" class="report-link" data-toggle="tooltip" title="View Stage2 report"><i class="fa fa-file-text"></i></a>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+    <%# Release column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:release] %> col release text-center">
+      <span class="value"><%= releaseVal %></span>
+      <%# ICONS - NEXT TO RELEASE FOR RELEASE TRACK %>
+      <%# If this is the release track, we're looking at formal releases. Icons let you view the releases. %>
+      <% if( @settingsRec.isAcReleaseTrack and docStatus != "In Preparation") %>
+        <%# Show stage 1 report link icon IFF user has permission to view it %>
+        <% if( userAllowed?( :gbac_view_stg1_rule_out_report ) ) %>
+          <a href="<%=stg1Link%>" data-trigger="hover" data-toggle="tooltip" title="View Stage1 report" class="report-link"><i class="fa fa-list-ul"></i></a>
+        <% end %>
+        <%# Show stage 2 report link icon IFF user has permission to view it %>
+        <% if( userAllowed?( :gbac_view_stg2_summary_report ) and stage1Status != "Failed" ) %>
+          <a href="<%=stg2Link%>" data-trigger="hover" class="report-link" data-toggle="tooltip" title="View Stage2 report"><i class="fa fa-file-text"></i></a>
+        <% end %>
+      <% end %>
+    </div>
+    <%# Status Column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:status] %> col status text-center">
+      <%= ( docStatus == "In Preparation" ? "(In Preparation)" : docStatus ) %>
+    </div>
+    <%# Date column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:date] %> col date text-center">
+      <%= date %>
+    </div>
+    <%# Outcomes column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:outcomes] %> col outcomes text-center">
+      <span class="label label-warning"><%=numOutcomes%></span>
+    </div>
+    <%# Interventions column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:interventions] %> col interventions text-center">
+      <span class="label label-warning"><%=numInterventions%></span>
+    </div>
+    <%# Guidelines column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:guidelines] %> col no-of-guidelines">
+      <%
+        guidelines.each_key { |prop|
+      %>
+          <span class="label label-info"><%=prop.gsub(/s$/, "")%> <span class="badge"><%=guidelines[prop]%></span></span>
+      <%
+        }
+      %>
+    </div>
+  </div>
+<%
+    @lastVerNum = verNum
+    rowIdx += 1
+  }
+%>
+
+<%
+  if(@skip > 0 && @endReached == false && @totalVers > (@showLimit+@skip) )
+%>
+  <div class="row show-more-btn-container">
+    <div class="show-more col col-xs-12 text-center">
+      <button class="btn btn-info show-more-btn" type="button" onclick="showMore()">Show More</button>
+    </div>
+  </div>
+<%
+  end
+%>

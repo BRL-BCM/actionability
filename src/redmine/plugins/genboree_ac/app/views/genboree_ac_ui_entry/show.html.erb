@@ -1,7 +1,7 @@
 <% content_for :header_tags do %>
   <%
     projectId = @projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ')
-
+    $stderr.puts "@currRmUser: #{@currRmUser.inspect}"
   %>
     <base href="<%=@kbMount%>/projects/<%=projectId%>/genboree_ac/ui/entry>">
     <%= stylesheet_link_tag 'entry', :plugin => 'genboree_ac'%>
@@ -9,18 +9,21 @@
 
 <% content_for :header_tags do %>
     <script>
-        /* This is set in the controller. */
-        var projectId = '<%=@projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe%>' ;
-        var docIdentifier = '<%=@docIdentifier.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
-        var kbMount = '<%=@kbMount%>' ;
-        var gbHost = '' ;
-        var gbGroup = '' ;
-        var gbKb = '';
-        var userRole = '<%=User.current.roles_for_project(Project.find(@projectId))[0].name.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
-        var gbLogin = '<%= User.current.login ? User.current.login.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe : 'anon'  %>' ;
-        var acCurationColl = '' ;
-        var acRefColl = '';
-        var acGenesColl = '';
+      /* This is set in the controller. */
+      var projectId = '<%=@projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe%>' ;
+      var docIdentifier = '<%=@docIdentifier.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+      var kbMount = '<%=@kbMount%>' ;
+      var gbHost = '' ;
+      var gbGroup = '' ;
+      var gbKb = '';
+      var userRole = '<%=@currRmUser.roles_for_project(Project.find(@projectId))[0].name.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+      var gbLogin = '<%= @currRmUser.login ? @currRmUser.login.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe : 'anon'  %>' ;
+      var acCurationColl = '' ;
+      var acRefColl = '';
+      var acGenesColl = '';
+      var versionLabel = '<%=l(:gbac_label_version)%>' ;
+      var releaseLabel = '<%=l(:gbac_label_release)%>' ;
+      
     </script>
     <%
         if @genboreeAc.nil?
@@ -31,13 +34,14 @@
         else
     %>
         <script>
-            gbHost = '<%=@genboreeAc.gbHost.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
-            gbGroup = '<%=@genboreeAc.gbGroup.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
-            gbKb = '<%=@genboreeAc.gbKb.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
-            acCurationColl = '<%=@genboreeAc.actionabilityColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
-            acRefColl = '<%=@genboreeAc.referencesColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
-            acGenesColl = '<%=@genboreeAc.genesColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
-            <%= @userPermsJS %>
+          gbHost = '<%=@genboreeAc.gbHost.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+          gbGroup = '<%=@genboreeAc.gbGroup.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+          gbKb = '<%=@genboreeAc.gbKb.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+          acCurationColl = '<%=@genboreeAc.actionabilityColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+          acRefColl = '<%=@genboreeAc.referencesColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+          acGenesColl = '<%=@genboreeAc.genesColl.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe %>' ;
+          var isReleaseKB = <%==@genboreeAc.isAcReleaseTrack%> ;
+          <%= @userPermsJS %>
         </script>
     <%
         end

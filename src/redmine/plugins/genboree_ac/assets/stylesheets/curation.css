@@ -34,3 +34,19 @@
   background-color: #f0f0f0;
   color: #000;
 }
+
+.reopen-alert-container {
+  width: 92%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
+
+.reopen-btn {
+  margin-left: 10px ;
+}
+
+.released-doc-status-switch-container .switch {
+  margin-top: 5px;
+  margin-bottom: 10px ;
+}

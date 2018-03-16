@@ -11,8 +11,9 @@ RedmineApp::Application.routes.draw do
   # --------
   # CURATION
   get '/projects/:id/genboree_ac/ui/curation', :to => "genboree_ac_ui_curation#show", :as => :genboree_ac_ui_curation_show
+  get '/projects/:id/genboree_ac/ui/curation/sections/show', :to => "genboree_ac_ui_curation_sections#show", :as => :genboree_ac_ui_curation_sections_show
   get '/projects/:id/genboree_ac/data/references/show', :to => "genboree_ac_references#show", :as => :genboree_ac_references_show
-  get '/projects/:id/genboree_ac/data/references/reference/show', :to => "genboree_ac_references#reference", :as => :genboree_ac_reference_show
+  get '/projects/:id/genboree_ac/data/references/reference/show', :to => "genboree_ac_references#reference", :as => :genboree_ac_references_reference
   get '/projects/:id/genboree_ac/ui/curation/sectionContents', :to => "genboree_ac_section_contents#show", :as => :genboree_ac_section_contents_show
   get '/projects/:id/genboree_ac/data/doc/show', :to => "genboree_ac_doc#show", :as => :genboree_ac_doc_show
   get '/projects/:id/genboree_ac/data/doc/model', :to => "genboree_ac_doc#model", :as => :genboree_ac_doc_model
@@ -24,13 +25,16 @@ RedmineApp::Application.routes.draw do
   get '/projects/:id/genboree_ac/data/history/show', :to => "genboree_ac_history#show", :as => :genboree_ac_history_show
   get '/projects/:id/genboree_ac/data/history/diffOutcome', :to => "genboree_ac_history#diffOutcome", :as => :genboree_ac_history_diff_outcome
   get '/projects/:id/genboree_ac/data/history/diffBaseSection', :to => "genboree_ac_history#diffBaseSection", :as => :genboree_ac_history_diff_BaseSection
-  post '/projects/:id/genboree_ac/data/references/reference/update', :to => "genboree_ac_references#update", :as => :genboree_ac_reference_update
+  post '/projects/:id/genboree_ac/data/references/reference/update', :to => "genboree_ac_references#update", :as => :genboree_ac_references_update
+  post '/projects/:id/genboree_ac/data/references/reference/remove', :to => "genboree_ac_references#remove", :as => :genboree_ac_references_remove
   post '/projects/:id/genboree_ac/data/history/revertOutcome', :to => "genboree_ac_history#revertOutcome", :as => :genboree_ac_history_revert_outcome
   post '/projects/:id/genboree_ac/data/history/revertStage2BaseSection', :to => "genboree_ac_history#revertStage2BaseSection", :as => :genboree_ac_history_revert_stage2BaseSection
   post '/projects/:id/genboree_ac/data/stageOne/save', :to => "genboree_ac_stage_one#save", :as => :genboree_ac_stage_one_save
   post '/projects/:id/genboree_ac/data/doc/syndrome/save', :to => "genboree_ac_doc#saveSyndromeInfo", :as => :genboree_ac_doc_saveSyndromeInfo
+  post '/projects/:id/genboree_ac/data/doc/geneDiseasePair/save', :to => "genboree_ac_doc#saveGeneDiseasePairInfo", :as => :genboree_ac_doc_saveGeneDiseasePairInfo
   post '/projects/:id/genboree_ac/data/doc/status/save', :to => "genboree_ac_doc#saveStatusInfo", :as => :genboree_ac_doc_saveStatusInfo
   post '/projects/:id/genboree_ac/data/doc/genes/save', :to => "genboree_ac_doc#saveGenesInfo", :as => :genboree_ac_doc_saveGenesInfo
+  post '/projects/:id/genboree_ac/data/doc/reopen', :to => "genboree_ac_doc#reopen", :as => :genboree_ac_doc_reopen
   post '/projects/:id/genboree_ac/data/stageOne/status/save', :to => "genboree_ac_stage_one#saveStatus", :as => :genboree_ac_stage_one_saveStatus
   post '/projects/:id/genboree_ac/data/stageTwo/saveOutcome', :to => "genboree_ac_stage_two#saveOutcome", :as => :genboree_ac_stage_two_saveOutcome
   post '/projects/:id/genboree_ac/data/stageTwo/saveCategory', :to => "genboree_ac_stage_two#saveCategory", :as => :genboree_ac_stage_two_saveCategory
@@ -41,6 +45,8 @@ RedmineApp::Application.routes.draw do
   post '/projects/:id/genboree_ac/data/score/saveOverallStatus', :to => "genboree_ac_score#saveOverallStatus", :as => :genboree_ac_scorer_saveOverallStatus
   post '/projects/:id/genboree_ac/data/score/saveSummaryInfo', :to => "genboree_ac_score#saveSummaryInfo", :as => :genboree_ac_scorer_saveSummaryInfo
   post '/projects/:id/genboree_ac/data/score/saveAttendeeInfo', :to => "genboree_ac_score#saveAttendeeInfo", :as => :genboree_ac_scorer_saveAttendeeInfo
+  post '/projects/:id/genboree_ac/data/score/saveNotes', :to => "genboree_ac_score#saveNotes", :as => :genboree_ac_scorer_saveNotes
+  post '/projects/:id/genboree_ac/data/score/reset', :to => "genboree_ac_score#reset", :as => :genboree_ac_scorer_reset
   post '/projects/:id/genboree_ac/data/litSearch/save', :to => "genboree_ac_lit_search#saveSourceInfo", :as => :genboree_ac_lit_search_saveSourceInfo
   post '/projects/:id/genboree_ac/data/litSearch/status/save', :to => "genboree_ac_lit_search#saveStatus", :as => :genboree_ac_lit_search_saveStatus
   post '/projects/:id/genboree_ac/data/litSearch/remove', :to => "genboree_ac_lit_search#remove", :as => :genboree_ac_lit_search_remove
@@ -49,16 +55,26 @@ RedmineApp::Application.routes.draw do
    
   # --------
   # ENTRY
-  get '/projects/:id/genboree_ac/ui', :to => "genboree_ac_ui_entry#show", :as => :genboree_ac_ui_entry_show
-  get '/projects/:id/genboree_ac', :to => "genboree_ac_ui_entry#show", :as => :genboree_ac_ui_entry_show
-  get '/projects/:id/genboree_ac/ui/entry', :to => "genboree_ac_ui_entry#show", :as => :genboree_ac_ui_entry_show
+  #get '/projects/:id/genboree_ac/ui', :to => "genboree_ac_ui_entry#show", :as => :genboree_ac_ui_entry_show
+  #get '/projects/:id/genboree_ac', :to => "genboree_ac_ui_entry#show", :as => :genboree_ac_ui_entry_show
+  get '/projects/:id/genboree_ac/ui/entry', :to => "genboree_ac_ui_docs_status#show", :as => :genboree_ac_ui_docs_status_show
   get '/projects/:id/genboree_ac/data/docs/show', :to => "genboree_ac_entry#show", :as => :genboree_ac_docs_show
   get '/projects/:id/genboree_ac/data/docs/genes', :to => "genboree_ac_entry#genes", :as => :genboree_ac_docs_genes
+  get '/projects/:id/genboree_ac/data/docs/check_gene', :to => "genboree_ac_entry#check_gene", :as => :genboree_ac_entry_check_gene
   get '/projects/:id/genboree_ac/data/docs/actionDocs', :to => "genboree_ac_entry#actionDocs", :as => :genboree_ac_docs_actionDocs
   post '/projects/:id/genboree_ac/data/doc/actionDocSave', :to => "genboree_ac_entry#save", :as => :genboree_ac_entry_save
+  # ----------
+  # Versions
+  get '/projects/:id/genboree_ac/ui/docVersions', :to => "genboree_ac_ui_doc_versions#show", :as => :genboree_ac_ui_doc_versions_show
+  # ----------
+  # Status Page / New Entry page
+  get '/projects/:id/genboree_ac/ui/docsStatus', :to => "genboree_ac_ui_docs_status#show", :as => :genboree_ac_ui_docs_status_show
+  get '/projects/:id/genboree_ac/ui', :to => "genboree_ac_ui_docs_status#show", :as => :genboree_ac_ui_docs_status_show
+  get '/projects/:id/genboree_ac/summ', :to => "genboree_ac_ui_docs_status#show", :as => :genboree_ac_ui_docs_status_show
+  get '/projects/:id/genboree_ac', :to => "genboree_ac_ui_docs_status#show", :as => :genboree_ac_ui_docs_status_show
   # --------
-  # FULL VIEW
-  get '/projects/:id/genboree_ac/ui/fullview', :to => "genboree_ac_ui_full_view#show", :as => :genboree_ac_ui_full_view_show
+  # FULL VIEW - Deprecated
+  # get '/projects/:id/genboree_ac/ui/fullview', :to => "genboree_ac_ui_full_view#show", :as => :genboree_ac_ui_full_view_show
   # --------
   # STAGE 1 RULE-OUT REPORT
   get '/projects/:id/genboree_ac/ui/stg1RuleOutRpt', :to => "genboree_ac_ui_stg1_rule_out_report#show", :as => :genboree_ac_ui_stg1_rule_out_report
@@ -73,4 +89,14 @@ RedmineApp::Application.routes.draw do
   # PROTO  - temp not for deploy
   get '/projects/:id/genboree_ac/proto/put/grp/:grpName', :to => 'put_proto#putGrp'
   get '/projects/:id/genboree_ac/proto/delete/grp/:grpName', :to => 'delete_proto#deleteGrp'
+
+  # --------
+  # API
+  get '/projects/:id/genboree_ac/api/doc/:docId(.:format)', :to => 'genboree_ac_api_doc_summary#dispatcher', :defaults => { :component => :summary }, :as => :genboree_ac_api_doc_summary
+  get '/projects/:id/genboree_ac/api/doc/:docId/genes(.:format)', :to => 'genboree_ac_api_doc_summary#dispatcher', :defaults => { :component => :genes }, :as => :genboree_ac_api_doc_genes
+  get '/projects/:id/genboree_ac/api/doc/:docId/conditions(.:format)', :to => 'genboree_ac_api_doc_summary#dispatcher', :defaults => { :component => :omims }, :as => :genboree_ac_api_doc_conditions
+  get '/projects/:id/genboree_ac/api/doc/:docId/omims(.:format)', :to => 'genboree_ac_api_doc_summary#dispatcher',:defaults => { :component => :omims },  :as => :genboree_ac_api_doc_omims
+  get '/projects/:id/genboree_ac/api/doc/:docId/scores(.:format)', :to => 'genboree_ac_api_doc_summary#dispatcher', :defaults => { :component => :consensus_scores }, :as => :genboree_ac_api_doc_consensus_scores
+  get '/projects/:id/genboree_ac/api/doc/:docId/scores/consensus(.:format)', :to => 'genboree_ac_api_doc_summary#dispatcher', :defaults => { :component => :consensus_scores }, :as => :genboree_ac_api_doc_consensus_scores
+  get '/projects/:id/genboree_ac/api/doc/:docId/scores/all(.:format)', :to => 'genboree_ac_api_doc#all_scores', :as => :genboree_ac_api_doc_all_scores
 end

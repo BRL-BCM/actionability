@@ -1,0 +1,12 @@
+{
+  "name" : "ac-release-wag",
+  "description" : "Directory-based message queue for released docs that should be queued in the ClinGen Web Applications Group's 'actionability' Kafka queue. Currently each message file is a released doc in heavyweight WAG-json format--this is TEMPORARY and will first change to a generic event queue message about a doc-released event with just the docID as file name and url as content, similar to the [ultimately] fully kafka based implementation.",
+  "location" : "/usr/local/brl/data/messages/queues/actionability/ac-release-wag",
+  "redmineProj" : "http://localhost/redmine/projects/actionability",
+  "docsColl" : {
+    "host" : "localhost",
+    "grp"  : "actionability",
+    "kb"   : "actionability_release",
+    "coll" : "combined_model"
+  }
+}

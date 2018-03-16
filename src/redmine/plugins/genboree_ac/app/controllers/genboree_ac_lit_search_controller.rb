@@ -5,126 +5,189 @@ require 'brl/util/util'
 require 'brl/genboree/kb/kbDoc'
 
 class GenboreeAcLitSearchController < ApplicationController
-  include GenboreeAcHelper
+  include GenboreeAcDocHelper
 
   respond_to :json
   before_filter :find_project
   unloadable
 
   def saveSourceInfo()
-    addProjectIdToParams()
-    @projectId = params['id']
     collName  = params['acCurationColl']
     docId     = params['docIdentifier']
-    searchSource    = params['searchSource']
     subdoc = JSON.parse(params['subdoc'])
-    searchString = params['searchString']
+    searchSourceKbDoc = BRL::Genboree::KB::KbDoc.new(subdoc)
+    searchSource = subdoc['Source']['value']
+    targetHost = getHost()
+    gbGroup = getGroup()
+    gbkb = getKb()
     # First check if Literature Search exists in the document
     rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}"
-    fieldMap  = { :coll => collName, :doc => docId } 
-    apiResult  = apiGet(rsrcPath, fieldMap)
-    doc = apiResult[:respObj]['data']
-    kbDoc = BRL::Genboree::KB::KbDoc.new(doc)
-    litSearchDoc = kbDoc.getSubDoc('ActionabilityDocID.LiteratureSearch')['LiteratureSearch']
-    if(litSearchDoc.nil? or kbDoc.getSubDoc('ActionabilityDocID.LiteratureSearch.Sources')['Sources'].nil? or kbDoc.getPropItems('ActionabilityDocID.LiteratureSearch.Sources').nil?) # LiteratureSearch does not exist yet in the document. Insert it and do a PUT
-      status = "Incomplete"
-      if(!litSearchDoc.nil? and kbDoc.getPropVal('ActionabilityDocID.LiteratureSearch.Status'))
-        status = kbDoc.getPropVal('ActionabilityDocID.LiteratureSearch.Status')
-      end
-      newSubDoc = { "LiteratureSearch" => { "properties" => { "Status" => { "value" => status }, "Sources" => { "value" => 1, "items" => [ { "Source" => { "value" => searchSource, "properties" => { "Notes" => { "value" => ""}, "SearchStrings" => { "value" => 1, "items" => [ subdoc ] }} }} ] } } } }
-      doc['ActionabilityDocID']['properties']['LiteratureSearch'] = newSubDoc['LiteratureSearch']
-      apiResult = apiPut(rsrcPath, JSON.generate(doc), fieldMap)
-    else # LiteratureSearch exists. Check if the Source exists
-      sources = kbDoc.getPropItems('ActionabilityDocID.LiteratureSearch.Sources')
-      sourceFound = false
-      sourceItemsFound = false
-      sourceKbDoc = nil
-      #$stderr.puts "sources:\n\n #{sources.inspect}"
-      sources.each { |sourceObj|
-        if(sourceObj['Source']['value'] == searchSource)
-          sourceKbDoc = BRL::Genboree::KB::KbDoc.new(sourceObj)
-          $stderr.puts "sourceKbDoc:\n\n#{JSON.pretty_generate(sourceKbDoc)}\n\nsourceKbDoc.getPropItems('Source.SearchStrings'):\n#{sourceKbDoc.getPropItems('Source.SearchStrings')}"
-          if(!sourceKbDoc.getPropItems('Source.SearchStrings').nil?)
-            sourceFound = true
-          end
-          if(sourceKbDoc.getPropItems('Source.SearchStrings').size > 0)
-            sourceItemsFound = true 
+    fieldMap  = { :grp => gbGroup, :kb => gbkb, :coll => collName, :doc => docId } 
+    apiReq = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+    apiReq.bodyFinish {
+      begin
+        headers = apiReq.respHeaders
+        status = apiReq.respStatus
+        headers['Content-Type'] = "text/plain"
+        doc = apiReq.respBody['data']
+        kbDoc = BRL::Genboree::KB::KbDoc.new(doc)
+        acDocProps = kbDoc.getPropProperties('ActionabilityDocID')
+        if(!acDocProps.key?('LiteratureSearch')) # LiteratureSearch does not exist yet in the document. Insert it and do a PUT
+          acDocProps['LiteratureSearch'] = { "properties" => { "Status" => { "value" => "Incomplete" }, "Sources" => { "items" => [ searchSourceKbDoc ] } } }
+        else # LiteratureSearch exists. 
+          sources = kbDoc.getPropItems('ActionabilityDocID.LiteratureSearch.Sources')
+          sourceFound = false
+          sources.each { |sourceObj|
+            sourceKbd = BRL::Genboree::KB::KbDoc.new(sourceObj)
+            if(sourceKbd.getPropVal('Source') == searchSource)
+              sourceKbd.setPropItems('Source.SearchStrings', searchSourceKbDoc.getPropItems('Source.SearchStrings'))
+              sourceFound = true
+              break
+            end
+          }
+          if (!sourceFound) 
+            sources.push(searchSourceKbDoc)
           end
         end
-      }
-      $stderr.puts "sourceFound: #{sourceFound.inspect}"
-      if (!sourceFound and !sourceItemsFound) 
-        newSubDoc =  { "Source" => { "value" => searchSource, "properties" => { "Notes" => { "value" => ""}, "SearchStrings" => { "value" => 1, "items" => [ subdoc ] }} }} 
-        sources.push(newSubDoc)
-        kbDoc.setPropItems('ActionabilityDocID.LiteratureSearch.Sources', sources)
-        apiResult = apiPut(rsrcPath, JSON.generate(kbDoc), fieldMap)
-      elsif(sourceFound and !sourceItemsFound)
-        sourceKbDoc.setPropItems('Source.SearchStrings', [subdoc])
-        apiResult = apiPut(rsrcPath, JSON.generate(kbDoc), fieldMap)
+        apiReq2 = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+        apiReq2.bodyFinish {
+          begin
+            headers = apiReq2.respHeaders
+            status = apiReq2.respStatus
+            headers['Content-Type'] = "text/plain"
+            apiReq2.sendToClient(status, headers, JSON.generate(apiReq2.respBody))
+          rescue => err
+            headers = apiReq2.respHeaders
+            status = apiReq2.respStatus
+            headers['Content-Type'] = "text/plain"
+            resp = { "status" => { "statusCode" => 500, "msg" => err }}
+            apiReq2.sendToClient(status, headers, JSON.generate(resp))
+          end
+        }
+        apiReq2.put(rsrcPath, fieldMap, JSON.generate(kbDoc))
+      rescue => err
+        headers = apiReq.respHeaders
+        headers['Content-Type'] = "text/plain"
+        resp = { "status" => { "statusCode" => 500, "msg" => err }}
+        apiReq.sendToClient(500, headers, JSON.generate(resp))
       end
-    end
-    # Do another PUT for just the searchString: this is required for proper history tracking of the SearchString item because if ONLY the previous PUT happened, it will not track the revision of the SearchString item doc.
-    rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}/prop/{prop}"
-    searchString.gsub!(/\"/, "\\\"")
-    searchString.gsub!(/,/, "\\,")
-    fieldMap  = { :coll => collName, :doc => docId, :prop => "ActionabilityDocID.LiteratureSearch.Sources.[].Source.{\"#{searchSource}\"}.SearchStrings.[].SearchString.{\"#{searchString}\"}" }
-    apiResult = apiPut(rsrcPath, JSON.generate(subdoc['SearchString']), fieldMap)
-    respond_with(apiResult[:respObj], :status => apiResult[:status], :location => "")
+    }
+    apiReq.get(rsrcPath, fieldMap)
   end
 
   def saveStatus()
-    addProjectIdToParams()
-    @projectId = params['id']
-    rsrcPath = ""
     collName  = params['acCurationColl']
     docId     = params['docIdentifier']
     status    = params['value']
     rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}/prop/{prop}"
-    fieldMap  = { :coll => collName, :doc => docId, :prop => "ActionabilityDocID.LiteratureSearch.Status" }
-    apiResult = apiPut(rsrcPath, JSON.generate({ "value" => status }), fieldMap)
-    respond_with(apiResult[:respObj], :status => apiResult[:status], :location => "")
+    targetHost = getHost()
+    gbGroup = getGroup()
+    gbkb = getKb()
+    fieldMap  = { :grp => gbGroup, :kb => gbkb, :coll => collName, :doc => docId, :prop => "ActionabilityDocID.LiteratureSearch.Status" }
+    apiReq = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+    apiReq.bodyFinish {
+      begin
+        headers = apiReq.respHeaders
+        status = apiReq.respStatus
+        headers['Content-Type'] = "text/plain"
+        respBody = JSON.generate(apiReq.respBody)
+        apiReq.sendToClient(status, headers, respBody)
+      rescue => err
+        headers = apiReq.respHeaders
+        status = apiReq.respStatus
+        headers['Content-Type'] = "text/plain"
+        resp = { "status" => { "statusCode" => 500, "msg" => err }}
+        apiReq.sendToClient(status, headers, JSON.generate(resp))
+      end
+    }
+    apiReq.put(rsrcPath, fieldMap, JSON.generate({ "value" => status }))
   end
   
   def remove()
-    addProjectIdToParams()
-    @projectId = params['id']
-    rsrcPath = ""
     collName  = params['acCurationColl']
     docId     = params['docIdentifier']
     searchSource    = params['searchSource']
     searchString = params['searchString']
     origSearchStr = params['origSearchStr']
     addNew = params['addNew']
+    targetHost = getHost()
+    gbGroup = getGroup()
+    gbkb = getKb()
+    fieldMap  = { :grp => gbGroup, :kb => gbkb, :coll => collName, :doc => docId }
     if(origSearchStr == "" and addNew == "false")
       rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}"
-      fieldMap = { :coll => collName, :doc => docId }
-      apiResult = apiGet(rsrcPath, fieldMap)
-      doc = apiResult[:respObj]['data']
-      kbDoc = BRL::Genboree::KB::KbDoc.new(doc)
-      sources = kbDoc.getPropItems('ActionabilityDocID.LiteratureSearch.Sources')
-      sources.each { |sourceObj|
-        if(sourceObj['Source']['value'] == searchSource)
-          sourceKbDoc = BRL::Genboree::KB::KbDoc.new(sourceObj)
-          searchStrings = sourceKbDoc.getPropItems('Source.SearchStrings')
-          newSearchStrings = []
-          searchStrings.each {|ss|
-            if(ss['SearchString']['value'] != "")
-              newSearchStrings.push(ss)
+      apiReq = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+      apiReq.bodyFinish {
+        begin
+          headers = apiReq.respHeaders
+          status = apiReq.respStatus
+          headers['Content-Type'] = "text/plain"
+          doc = apiReq.respBody['data']
+          kbDoc = BRL::Genboree::KB::KbDoc.new(doc)
+          sources = kbDoc.getPropItems('ActionabilityDocID.LiteratureSearch.Sources')
+          sources.each { |sourceObj|
+            if(sourceObj['Source']['value'] == searchSource)
+              sourceKbDoc = BRL::Genboree::KB::KbDoc.new(sourceObj)
+              searchStrings = sourceKbDoc.getPropItems('Source.SearchStrings')
+              newSearchStrings = []
+              searchStrings.each {|ss|
+                if(ss['SearchString']['value'] != "")
+                  newSearchStrings.push(ss)
+                end
+              }
+              sourceKbDoc.setPropItems('Source.SearchStrings', newSearchStrings)
             end
           }
-          sourceKbDoc.setPropItems('Source.SearchStrings', newSearchStrings)
+          
+          apiReq2 = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+          apiReq2.bodyFinish {
+            begin
+              headers = apiReq2.respHeaders
+              status = apiReq2.respStatus
+              headers['Content-Type'] = "text/plain"
+              respBody = JSON.generate(apiReq2.respBody)
+              apiReq2.sendToClient(status, headers, respBody)
+            rescue => err
+              headers = apiReq2.respHeaders
+              status = apiReq2.respStatus
+              headers['Content-Type'] = "text/plain"
+              resp = { "status" => { "statusCode" => 500, "msg" => err }}
+              apiReq2.sendToClient(status, headers, JSON.generate(resp))
+            end
+          }
+          apiReq2.put(rsrcPath, fieldMap, JSON.generate(kbDoc))
+        rescue => err
+          headers = apiReq.respHeaders
+          status = apiReq.respStatus
+          headers['Content-Type'] = "text/plain"
+          resp = { "status" => { "statusCode" => 500, "msg" => err }}
+          apiReq.sendToClient(status, headers, JSON.generate(resp))
         end
       }
-      apiResult = apiPut(rsrcPath, JSON.generate(kbDoc), fieldMap)
+      apiReq.get(rsrcPath, fieldMap)
     else
       rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}/prop/{prop}"
       searchString.gsub!(/\"/, "\\\"")
       searchString.gsub!(/,/, "\\,")
-      fieldMap  = { :coll => collName, :doc => docId, :prop => "ActionabilityDocID.LiteratureSearch.Sources.[].Source.{\"#{searchSource}\"}.SearchStrings.[].SearchString.{\"#{searchString}\"}" }
-      apiResult = apiDelete(rsrcPath, fieldMap)
+      fieldMap[:prop] = "ActionabilityDocID.LiteratureSearch.Sources.[].Source.{\"#{searchSource}\"}.SearchStrings.[].SearchString.{\"#{searchString}\"}"
+      apiReq = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+      apiReq.bodyFinish {
+        begin
+          headers = apiReq.respHeaders
+          status = apiReq.respStatus
+          headers['Content-Type'] = "text/plain"
+          respBody = JSON.generate(apiReq.respBody)
+          apiReq.sendToClient(status, headers, respBody)
+        rescue => err
+          headers = apiReq.respHeaders
+          status = apiReq.respStatus
+          headers['Content-Type'] = "text/plain"
+          resp = { "status" => { "statusCode" => 500, "msg" => err }}
+          apiReq.sendToClient(status, headers, JSON.generate(resp))
+        end
+      }
+      apiReq.delete(rsrcPath, fieldMap)
     end
-    
-    respond_with(apiResult[:respObj], :status => apiResult[:status], :location => "")
   end
 
 end

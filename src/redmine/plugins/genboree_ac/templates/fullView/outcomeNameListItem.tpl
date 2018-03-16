@@ -1,2 +1,0 @@
-<!-- INLINED -->
-<li><%= @outcome %></li>

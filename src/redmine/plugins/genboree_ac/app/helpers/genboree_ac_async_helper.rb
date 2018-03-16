@@ -19,18 +19,18 @@ module GenboreeAcAsyncHelper
     if(refIds and !refIds.empty?)
       # Arrange to get full doc for all mentioned References in non-blocking way.
       uniqRefIds = refIds.uniq
-      $stderr.debugPuts(__FILE__, __method__, "STATUS", "The doc #{kbDoc.getRootPropVal().inspect} has #{refIds.size} reference mentions ; #{uniqRefIds.inspect.size} unique reference docs.")
+      $stderr.debugPuts(__FILE__, __method__, "STATUS", "The doc #{kbDoc.getRootPropVal().inspect} has #{refIds.size} reference mentions ; there are #{uniqRefIds.inspect.size} unique reference docs.")
       initLastApiErrVars()
       @lastApiReq = GbApi::JsonAsyncApiRequester.new(env, @gbHost, @project) unless(@lastApiReq)
       rsrcPath = '/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/docs?matchProp=Reference&matchMode=exact&detailed=true&matchValues={vals}'
       fieldMap  = { :grp => @gbGroup, :kb => @gbKb, :coll => collName, :vals => uniqRefIds }
       @lastApiReq.bodyFinish {
-        $stderr.debugPuts(__FILE__, __method__, 'DEBUG', "++++++ DOC ASYNC - GET REFS DETAILS: in bodyFinish callback")
+        #$stderr.debugPuts(__FILE__, __method__, 'DEBUG', "++++++ DOC ASYNC - GET REFS DETAILS: in bodyFinish callback")
         begin
           if(@lastApiReq.apiDataObj and @lastApiReq.respStatus < 400 and !@lastApiReq.apiDataObj.is_a?(Exception))
             rawRefDocs = @lastApiReq.apiDataObj
             refDocs = rawRefDocs.map { |refDoc| BRL::Genboree::KB::KbDoc.new( refDoc ) }
-            $stderr.debugPuts(__FILE__, __method__, 'DEBUG', "++++++ DOC ASYNC - GET REFS DETAILS: SUCCESS - have ref KbDocs; resp was #{@lastApiReq.respStatus.inspect} with #{@lastApiReq.rawRespBody.size} byte payload")
+            #$stderr.debugPuts(__FILE__, __method__, 'DEBUG', "++++++ DOC ASYNC - GET REFS DETAILS: SUCCESS - have ref KbDocs; resp was #{@lastApiReq.respStatus.inspect} with #{@lastApiReq.rawRespBody.size} byte payload")
             # Replace reference values in kbDoc if asked.
             if(opts[:replaceWithNums] or opts[:replaceRefLinksWith] == :nums)
               replaceRefLinks(kbDoc, refIds, refDocs, :nums)

@@ -1,0 +1,2 @@
+module DeleteProtoHelper
+end

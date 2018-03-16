@@ -1,8 +1,33 @@
 <%
+  # @todo Report links compare current version to displayed version:
+
   renderError = false
   if(@kbDoc)
     modelHash = { :docModel => @docModel }
-    opts = { :trim => @trim, :detailed => @detailed }
+
+    # Configure Templater options
+    # - Standard options but in addition to the obvious @kbDoc that the Templater will specifically get,
+    #   we also need to pass in some important instance variables / context info.
+    #   . We need to arrange this because the Templater and the underlying template-producer are helper/library classes
+    #     completely independent of Rails MVC. They don't magically get access to Controller instance variables
+    #     like Rails' Views do!
+    opts = {
+      :trim => @trim,
+      :detailed => @detailed,
+      :templateDir => templateGroupDir(:stg1RuleOutRpt, @templateSet ),
+      :skipValidation       => true,
+      :skipVariabilization  => true, # big speed up
+      :context => { # What contextual info do we need to aid rendering? Mainly Controller instance variables
+        :viewingHeadVersion => @viewingHeadVersion,
+        :viewAcDocVersion   => @acDocVersion,
+        :headAcDocVersion   => @headVersionNum,
+        :isAcReleaseTrack   => @settingsRec.isAcReleaseTrack,
+        :verOrRelLabel      => ( @settingsRec.isAcReleaseTrack ? l(:gbac_label_release) : l(:gbac_label_version) ),
+        :gbac_label_release => l(:gbac_label_release),
+        :releaseKbBaseUrl   => @settingsRec.releaseKbBaseUrl,
+        :requestUrl         => request.url
+      }
+    }
     begin
       # Core doc content via templates
       templater = GenboreeAcTemplaters::Stg1RuleoutReportTemplater.new(modelHash, opts)
@@ -19,6 +44,9 @@
   end
 %>
 <% content_for :header_tags do %>
+  <% unless( @settingsRec.urlMountDir.blank? ) %>
+    <base href="<%= @settingsRec.urlMountDir %>">
+  <% end %>
     <script type="text/javascript">
       var kbMount = "<%= @kbMount %>" ;
       /* This is set in the controller. */
@@ -30,6 +58,7 @@
 
     <%= stylesheet_link_tag 'stg1RuleOutRpt', :media => 'all', :plugin => 'genboree_ac' %>
     <%= javascript_include_tag 'helpers', :plugin => 'genboree_ac' %>
+    <%= javascript_include_tag 'reports', :plugin => 'genboree_ac' %>
 <% end %>
 
 <!-- PAGE -->

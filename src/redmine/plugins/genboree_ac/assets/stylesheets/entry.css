@@ -70,6 +70,10 @@ span.entry-label{
   line-height: 111.5% ;
 }
 
+.linkbutton.doc-versions {
+  line-height: 111.5% ;
+}
+
 .searchEmpty {
   font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif,FontAwesome;
   font-size: 15px ;

@@ -1,0 +1,214 @@
+
+<%
+  kbMount = RedmineApp::Application.routes.default_scope[:path].to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe
+  @kbMount = kbMount
+  projectId = @projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe
+  @projectId = projectId 
+  baseHref = ((@urlMountDir.nil? or @urlMountDir.empty?) ? "/clingen-actionability/" : @urlMountDir)
+  verOrRelLabel = ( @settingsRec.isAcReleaseTrack ? l(:gbac_label_release) : l(:gbac_label_version) )
+  # Build link to release history
+  if( @settingsRec.isAcReleaseTrack or @settingsRec.releaseKbBaseUrl.blank? )
+    releaseHistoryLink = ''
+  else
+    releaseKbBaseUrl= @settingsRec.releaseKbBaseUrl.to_s.strip
+    releaseKbBaseUrl.chomp!('/')
+    releaseHistoryLink = "#{releaseKbBaseUrl}/ui/docVersions?doc=#{@docIdentifier}"
+  end
+%>
+<% content_for :header_tags do %>
+  <base href="<%=baseHref%>">
+  <%= javascript_include_tag 'helpers', :plugin => 'genboree_ac' %>
+<% end %>
+<%
+  if(@errorFound == false)
+%>
+  <script type="text/javascript">
+    var showLimit = <%==@showLimit%> ;
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+      $(".total-docs-count-hidden-container").remove() ;
+    });
+    var skip = <%==@skip%> ;
+    var kbMount = '<%==kbMount%>' ;
+    var projectId = '<%==projectId%>' ;
+    var totalDocs = <%==@totalDocs%> ;
+    var showStatus = '<%==@showStatus%>' ;
+    var filterChanged = false ;
+    var matchOrderByStr = '<%==@matchOrderByStr%>' ;
+    var queryTerm = '<%==@queryTerm%>' ;
+    var geneLookup = {} ;
+    var gridColSizesJSON = '<%==JSON.generate(@colSizes)%>' ;
+    var versionLabel = '<%=l(:gbac_label_version)%>' ;
+    var releaseLabel = '<%=l(:gbac_label_release)%>' ;
+    var newlyAdded = {} ;
+  </script>
+  <div class="edits doc-versions-container container-fluid">
+    
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#clingen-actionability-report" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand">ClinGen Actionability Report</a>
+        </div>
+    
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="clingen-actionability-report">
+          <%
+            unless(@settingsRec.isAcReleaseTrack)
+          %>
+            <ul class="nav navbar-nav">
+              <button type="button" data-toggle="modal" data-target="#createNewModal" class="btn btn-primary navbar-btn">Create New</button>
+            </ul>
+          <%
+            end
+          %>
+          <form class="navbar-form navbar-left">
+            
+            <div class="form-group">
+              <input type="text" oninput="resetIfEmpty();" title="You can search by gene or syndrome. Clear field to reset search." data-toggle="tooltip" data-trigger="hover" id="searchByTermInput" class="form-control" placeholder="Search">
+            </div>
+            <button type="button" class="btn btn-default" onclick="searchByTerm()">Search</button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Filter <span class="caret"></span></a>
+              <ul class="dropdown-menu filter">
+                <li><a data-status="all" href="javascript:showDocsWithStatus('all')">Status: All <span data-status="all" class="<%=(@showStatus == "all" ? "glyphicon glyphicon-ok" :  "")%>"></span></a></li>
+                <%
+                  if(@settingsRec.isAcReleaseTrack)
+                %>
+                  <li><a data-status="In Preparation" href="javascript:showDocsWithStatus('In Preparation')">Status: In Preparation <span class="<%=(@showStatus == "In Preparation" ? "glyphicon glyphicon-ok" :  "")%>" data-status="In Preparation"></span></a></li>
+                  
+                <%
+                  else
+                %>
+                  <li><a href="javascript:showDocsWithStatus('Entered')">Status: Entered <span data-status="Entered" class="<%=(@showStatus == "Entered" ? "glyphicon glyphicon-ok" :  "")%>"></span></a></li>
+                  <li><a href="javascript:showDocsWithStatus('Collecting')">Status: Collecting <span data-status="Collecting" class="<%=(@showStatus == "Collecting" ? "glyphicon glyphicon-ok" :  "")%>"></span></a></li>
+                  <li><a href="javascript:showDocsWithStatus('Reviewing')">Status: Reviewing <span data-status="Reviewing" class="<%=(@showStatus == "Reviewing" ? "glyphicon glyphicon-ok" :  "")%>"></span></a></li>
+                <%
+                  end
+                %>
+                <li><a data-status="Released" href="javascript:showDocsWithStatus('Released')">Status: Released <span class="<%=(@showStatus == "Released" ? "glyphicon glyphicon-ok" :  "")%>" data-status="Released"></span></a></li>
+                <li><a data-status="Released - Under Revision" href="javascript:showDocsWithStatus('Released - Under Revision')">Status: Released - Under Revision <span class="<%=(@showStatus == "Released - Under Revision" ? "glyphicon glyphicon-ok" :  "")%>" data-status="Released - Under Revision" ></span></a></li>
+                <li><a data-status="Undergoing active curation" href="javascript:showDocsWithStatus('Undergoing active curation')">Status: Undergoing active curation <span class="<%=(@showStatus == "Undergoing active curation" ? "glyphicon glyphicon-ok" :  "")%>" data-status="Undergoing active curation" ></span></a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort By<span class="caret"></span></a>
+              <ul class="dropdown-menu order-by">
+                <!--<li><a href="javascript:sortDocs('syndrome-gene')">Syndrome-Gene(s) <span data-order-by="syndrome-gene" class="glyphicon glyphicon-ok"></span></a></li>
+                <li><a href="javascript:sortDocs('gene-syndrome')">Gene(s)-Syndrome<span data-order-by="gene-syndrome" ></span></a></li>-->
+                <li><a href="javascript:sortDocs('syndrome')">Syndrome <span class="<%=(@matchOrderByStr == "syndrome" ? "glyphicon glyphicon-ok" :  "")%>" data-order-by="syndrome" ></span></a></li>
+                <li><a href="javascript:sortDocs('gene')">Gene(s) <span class="<%=(@matchOrderByStr == "gene" ? "glyphicon glyphicon-ok" :  "")%>" data-order-by="gene" ></span></a></li>
+                <li><a href="javascript:sortDocs('status')">Status <span class="<%=(@matchOrderByStr == "status" ? "glyphicon glyphicon-ok" :  "")%>" data-order-by="status" ></span></a></li>
+              </ul>
+            </li>
+            <% if(@currRmUser and @currRmUser.login and @currRmUser.login != "") %>
+              <li class="logout-btn-container"><button type="button" data-toggle="modal" onclick="logout();" class="btn btn-primary navbar-btn">Sign Out</button></li>
+            <% end %>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+    
+    
+    <div class="docs-count-text-container <%=(@totalDocs > 0 ? "" : " hide")%>">
+      <%
+        showing = (@totalDocs > @showLimit ? @showLimit : @totalDocs)
+      %>
+      <div class="docs-count-text">
+        <a href="summ?status=Undergoing%20active%20curation" data-html="true" data-trigger="hover" data-toggle="tooltip" title="Click to view gene-disease pairs that are actively being worked on." class="btn btn-link">View Active Gene-Disease pairs</a>
+        <span >Showing <%=showing%> of <%=@totalDocs%> topics</span>
+      </div>
+    </div>
+    
+    <div class="panel panel-info versions-panel <%=(@totalDocs > 0 ? "" : " hide")%>"> 
+      <div class="row header">
+        <%# Disease/Syndrome column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:syndrome] %> col text-center">
+          Syndrome
+          <span data-sort-type="syndrome" class="glyphicon sort-indicator  glyphicon-triangle-top <%=(@matchOrderByStr == "syndrome" ? "" : "hide")%>"></span>
+          <span data-sort-type="syndrome" class="glyphicon  sort-indicator glyphicon-triangle-bottom hide"></span>
+        </div>
+        <%# Gene column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:genes] %> col text-center">
+          Genes
+          <span data-sort-type="gene" class="glyphicon  sort-indicator glyphicon-triangle-top <%=(@matchOrderByStr == "gene" ? "" : "hide")%>"></span>
+          <span data-sort-type="gene" class="glyphicon  sort-indicator glyphicon-triangle-bottom hide"></span>
+        </div>
+        <%# Last Edited column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:lastEdited] %> col text-center">
+          Last Updated
+        </div>
+        <%# Status column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:status] %> col text-center">
+          
+          <div class="">
+            <div class="col-xs-12 col-md-8">
+              Status
+              <span data-sort-type="status" class="glyphicon  sort-indicator glyphicon-triangle-top <%=(@matchOrderByStr == "status" ? "" : "hide")%>"></span>
+              <span data-sort-type="status" class="glyphicon  sort-indicator glyphicon-triangle-bottom hide"></span>
+            </div>
+            <div class="col-xs-12  col-md-4">
+              
+            </div>
+          </div>
+        </div>
+        <%# Actions column %>
+        <!--<div class="col-xs-12 <%= @colSizes[:md][:actions] %> col text-center">
+          
+        </div>-->
+      </div>
+      <%= render :partial => "genboree_ac_ui_docs_status/docs_status_records" %>
+      <%
+        clsList = "row show-more-btn-container"
+        clsList << " hide "if(@totalDocs <= @showLimit)
+      %>
+      <div class="<%=clsList%>">
+        <div class="show-more col col-xs-12 text-center">
+          <button class="btn btn-info show-more-btn" type="button" onclick="showMoreDocs()">Show More</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="docs-count-text-container <%=(@totalDocs > 0 ? "" : " hide")%>">
+      <%
+        showing = (@totalDocs > @showLimit ? @showLimit : @totalDocs)
+      %>
+      <div class="docs-count-text">
+        <span >Showing <%=showing%> of <%=@totalDocs%> topics</span>
+      </div>
+    </div>
+    
+    <div class="well well-lg no-docs <%=(@totalDocs > 0 ? "hide" : "")%>">
+      There are no topics in this database yet. 
+    </div>
+    
+  </div>
+
+  
+
+<%
+  else
+%>
+  <div class="doc-versions-container container-fluid">
+    <div class="well well-lg">
+      <%=@errMsg%>
+    </div>
+  </div>
+<%
+  end
+%>
+<%
+  unless(@settingsRec.isAcReleaseTrack)
+%>
+  <%= render :partial => "genboree_ac_ui_docs_status/create_new" %>
+<%
+  end
+%>

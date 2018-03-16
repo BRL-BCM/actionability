@@ -2,26 +2,58 @@
   renderError = false
   if(@kbDoc)
     modelHash = { :docModel => @docModel, :refModel => @refModel }
-    opts = { :trim => @trim, :detailed => @detailed, :twoCharNewline => '<div class="pgap">&nbsp;</div>'  }
+
+    # Configure Templater options
+    # - Standard options but in addition to the obvious @kbDoc that the Templater will specifically get,
+    #   we also need to pass in some important instance variables / context info.
+    #   . We need to arrange this because the Templater and the underlying template-producer are helper/library classes
+    #     completely independent of Rails MVC. They don't magically get access to Controller instance variables
+    #     like Rails' Views do!
+    opts = {
+      :trim => @trim,
+      :detailed => @detailed,
+      :templateDir => templateGroupDir(:stg2SummaryRpt, @templateSet ),
+      :twoCharNewline => '<div class="pgap">&nbsp;</div>',
+      :skipValidation       => true,
+      :skipVariabilization  => true, # big speed up
+      :context => { # What contextual info do we need to aid rendering? Mainly Controller instance variables
+        :viewingHeadVersion => @viewingHeadVersion,
+        :viewAcDocVersion   => @acDocVersion,
+        :headAcDocVersion   => @headVersionNum,
+        :isAcReleaseTrack     => @settingsRec.isAcReleaseTrack,
+        :verOrRelLabel      => ( @settingsRec.isAcReleaseTrack ? l(:gbac_label_release) : l(:gbac_label_version) ),
+        :gbac_label_release => l(:gbac_label_release),
+        :releaseKbBaseUrl   => @settingsRec.releaseKbBaseUrl,
+        :requestUrl         => request.url
+      }
+    }
+    #$stderr.debugPuts(__FILE__, __method__, 'DEBUG', "opts (for Templater class):\n\n#{JSON.pretty_generate(opts) rescue opts.inspect}\n\n")
     begin
       # Core doc content via templates
       templater = GenboreeAcTemplaters::Stg2SummaryReportTemplater.new(modelHash, opts)
       docHtml = templater.docHtml(@kbDoc)
       # Discover ref_%ID% strings in the order they appear in the doc
       refIdsInDocAppearanceOrder = docHtml.scan( /ref_%([^%]+)%/ )
-      # Non-redundant order
-      refIdsInDocAppearanceOrder.flatten!
-      refIdsInDocAppearanceOrder.uniq!
+      $stderr.debugPuts(__FILE__, __method__, 'DEBUG', "refIdsInDocAppearanceOrder:\n\n#{refIdsInDocAppearanceOrder.inspect}\n\n")
+      if( refIdsInDocAppearanceOrder and !refIdsInDocAppearanceOrder.empty? )
+        # Non-redundant order
+        refIdsInDocAppearanceOrder.flatten!
+        refIdsInDocAppearanceOrder.uniq!
 
-      # BEFORE RENDERING the References/Biolography section, sort @refDocs by their index in refIdsInDocAppearanceOrder
-      @refDocs.sort! { |aa, bb|
-        aaIdx = refIdsInDocAppearanceOrder.index( aa.getRootPropVal() )
-        bbIdx = refIdsInDocAppearanceOrder.index( bb.getRootPropVal() )
-        aaIdx <=> bbIdx
-      }
+        # BEFORE RENDERING the References/Biolography section, sort @refDocs by their index in refIdsInDocAppearanceOrder
+        @refDocs.sort! { |aa, bb|
+          aaIdx = refIdsInDocAppearanceOrder.index( aa.getRootPropVal() )
+          bbIdx = refIdsInDocAppearanceOrder.index( bb.getRootPropVal() )
+          aaIdx <=> bbIdx
+        }
 
-      # Produce html for @refDocs using templates
-      refHtmls = templater.refsHtml(@refDocs)
+        # Produce html for @refDocs using templates
+        refHtmls = templater.refsHtml(@refDocs)
+      else
+        refHtmls = ''
+      end
+
+      #$stderr.debugPuts(__FILE__, __method__, 'DEBUG', "refHtmls:\n\n#{refHtmls}\n\n")
 
       # Replace all ref_%ID% place holders in html with ref_IDX
       [docHtml, refHtmls].each { |html|
@@ -46,6 +78,9 @@
   end
 %>
 <% content_for :header_tags do %>
+    <% unless( @settingsRec.urlMountDir.blank? ) %>
+      <base href="<%= @settingsRec.urlMountDir %>">
+    <% end %>
     <script type="text/javascript">
       var kbMount = "<%= @kbMount %>" ;
       /* This is set in the controller. */
@@ -57,6 +92,7 @@
 
     <%= stylesheet_link_tag 'stg2SummRpt', :media => 'all', :plugin => 'genboree_ac' %>
     <%= javascript_include_tag 'helpers', :plugin => 'genboree_ac' %>
+    <%= javascript_include_tag 'helpers', :plugin => 'genboree_generic' %>
 <% end %>
 
 <!-- PAGE -->
@@ -78,3 +114,23 @@
     <% end %>
   </div>
 </div>
+
+<% content_for :body_end do %>
+  <%# Sort the ref links spans sensibly w.r.t. their neighbor spans %>
+  <%# @todo Wrong, this should really be done via an $(docuemnt).ready( function ) or more simply $( function ) %>
+  <script type="text/javascript">
+    $(window).load( function() {
+      setTimeout( function() {
+        $( ".refs .paragraph" ).each( function( idx ) {
+          sortUsingNestedAttrVals( this, '.ref.link', '.ref.link', 'data-ac-ref-id', true ) ;
+        } ) ;
+      }, 500 ) ;
+    });
+
+    <%# Use $(function) as "on ready" event handler call %>
+    $( function() {
+      sortUsingNestedAttrVals( $('.col.gene-syndromes .values'), '.gene-syndrome', '.gene-syndrome', 'data-ac-genesyndrome', false ) ;
+    }) ;
+  </script>
+
+<% end %>

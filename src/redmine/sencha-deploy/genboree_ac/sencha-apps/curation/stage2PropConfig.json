@@ -2,8 +2,8 @@
   "data": {
     "labelWidths": {
       "Tier": 30,
-      "Notes": 50,
-      "Recommendation Text": 150,
+      "Notes": 60,
+      "Recommendation Text": 165,
       "Source of Population": 150
     },
     "props": {
@@ -99,7 +99,7 @@
           "keyTextStr": "Penetrance",
           "keyTextLabelLength": 90
         },
-        "ActionabilityDocID.Stage 2.Threat Materialization Chances.Relative Risk": {
+        "ActionabilityDocID.Stage 2.Threat Materialization Chances.Relative Risks": {
           "propText": "Relative Risk",
           "divId": "relRiskDiv",
           "cls": "stageTwoDepth1Cls",
@@ -112,27 +112,27 @@
           "keyTextPlaceholder": "Enter notes here...",
           "excludeProps": ["Notes"],
           "cls": "stageTwoDepth1Cls",
-          "keyTextLabelLength": 50
+          "keyTextLabelLength": 60
         },
         
-        "ActionabilityDocID.Stage 2.Acceptability of Intervention.Nature of Intervention": {
+        "ActionabilityDocID.Stage 2.Acceptability of Intervention.Natures of Intervention": {
           "propText": "Nature of Intervention",
           "divId": "natIntDiv",
-          "excludeProps": ["Notes"],
+          "excludeProps": [],
           "keyTextStr": "Notes",
           "keyTextPlaceholder": "Enter notes here...",
           "cls": "stageTwoDepth0Cls",
-          "keyTextLabelLength": 50
+          "keyTextLabelLength": 60
         },
         
-        "ActionabilityDocID.Stage 2.Condition Escape Detection.Chance to Escape Clinical Detection": {
+        "ActionabilityDocID.Stage 2.Condition Escape Detection.Chances to Escape Clinical Detection": {
           "propText": "Clinical Detection Escape Chance",
           "divId": "clinDetEspDiv",
           "cls": "stageTwoDepth0Cls",
           "keyTextStr": "Notes",
           "excludeProps": ["Notes"],
           "keyTextPlaceholder": "Enter notes here...",
-          "keyTextLabelLength": 50
+          "keyTextLabelLength": 60
         },
         "ActionabilityDocID.Stage 2.Status": {
           "propText": "Status",

@@ -14,6 +14,7 @@
 <head>
   <meta charset="utf-8" />
   <title><%=h html_title %></title>
+  
   <meta name="description" content="<%= Redmine::Info.app_name %>" />
   <meta name="keywords" content="issue,bug,tracker" />
   <%# Have Redmine add its authorization token meta tags (and favicon meta tag) %>
@@ -29,18 +30,74 @@
 
   <%# Load Redmine's application.js for core variables etc %>
   <%= javascript_include_tag 'application.js' %>
+  <%= javascript_include_tag 'bootstrap-tagsinput-0.8-ARJ-BUG-FIXES.js', :plugin => 'genboree_generic', :media => 'all' %>
+  
+  <%= javascript_include_tag 'doc_versions.js', :plugin => 'genboree_ac', :media => 'all' %>
+  <%= javascript_include_tag 'docs_status.js', :plugin => 'genboree_ac', :media => 'all' %>
   <%# Load Bootstrap related js/css files %>
   <%= javascript_include_tag 'bootstrap-fa-extensive-noMedia.js', :plugin => 'genboree_ac' %>
+  <%= javascript_include_tag 'bootstrap-tagsinput-0.8-ARJ-BUG-FIXES.js', :plugin => 'genboree_generic', :media => 'all' %>
+  <%= javascript_include_tag 'validator.js', :plugin => 'genboree_generic', :media => 'all' %>
+  <%= stylesheet_link_tag 'bootstrap-tagsinput-0.8.css', :plugin => 'genboree_generic', :media => 'all' %>
   <%= stylesheet_link_tag 'bootstrap-fa-extensive-noMedia.css', :plugin => 'genboree_ac', :media => 'all' %>
   <%= stylesheet_link_tag 'font-awesome.css', :plugin => 'genboree_ac', :media => 'all' %>
 
   <%# Common/base plugin CSS files - should be simple things and/or generic %>
   <%= stylesheet_link_tag 'common.css', :plugin => 'genboree_ac', :media => 'all' %>
-
+  <%= stylesheet_link_tag 'docs_status.css', :plugin => 'genboree_ac', :media => 'all' %>
+  <%= stylesheet_link_tag 'doc_versions.css', :plugin => 'genboree_ac', :media => 'all' %>
   <%= stylesheet_link_tag 'font-awesome.css', :plugin => 'genboree_ac', :media => 'all' %>
   <%# Arrange for any <head> content from the specific View (i.e. via this: content_for :header_tags) %>
   <%= yield :header_tags -%>
-
+  <script type="application/javascript">
+    $(window).load(function(){
+      // Todo: display name of gene gene that is not present in the 'error display'
+      if($("#createNewModal").length > 0) {
+        
+        // Override the submit button of the 'Create New' form since we want to make AJAX POSTs
+        $("#createNewForm").submit(function(e) {
+          e.preventDefault(); // avoid to execute the actual submit of the form.
+          if($("#genesInput").tagsinput("items").length > 0 && $("#omimInput").tagsinput("items").length > 0 && $("#syndromeInput").val() !== ""){
+            validateCreateNewForm() ;
+          }
+        });
+        
+        // Load up all genes. This will be required when create new is submitted
+        $.ajax(kbMount+'/projects/'+projectId+'/genboree_ac/data/docs/genes', {
+          method: 'GET',
+          success : function(data){
+            var genes = JSON.parse(data)['data'] ;
+            for(var ii=0; ii<genes.length; ii++){
+              geneLookup[genes[ii].Gene.value] = true ;
+            }
+            $("#createNewForm").validator({ custom: {
+              genecheck: function($el){
+                var enteredGenes = $el.val().split(",") ;
+                var errorStr = "" ;
+                if(enteredGenes.length > 0 && enteredGenes[0] !== "") {
+                  for(var jj=0; jj<enteredGenes.length; jj++){
+                    var gg = enteredGenes[jj].toUpperCase() ;
+                    if(geneLookup[gg] === undefined){
+                      errorStr = gg+" not found. Hint: Use HUGO names" ;
+                      break ;
+                    }
+                    
+                  }
+                  if(errorStr !== "") {
+                    return errorStr ;
+                  }
+                }
+              }
+            }}) ;
+          },
+          error: function(data){
+            // @todo display error message
+            console.log("Failed to get gene lookup list!") ;
+          }
+        }) ;
+      }
+    });
+  </script>
 </head>
 <body>
   <%# Insert static header file, if available %>
@@ -62,5 +119,35 @@
   <% if(File.exist?(footerFile)) %>
     <%= File.read(footerFile).html_safe %>
   <% end %>
+
+  <div id="spinningModal" class="modal fade " data-label="" data-body=""  tabindex="-1" role="dialog">
+    <div id="spinnerContainer" class="loading spinner-container">
+      
+    </div>
+  </div>
+
+  <div class="modal fade" id="reopenModal" tabindex="-1" role="dialog" aria-labelledby="reopenModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="reopenModalLabel">Reopen Document</h4>
+        </div>
+        <div class="modal-body">
+          <div class="release-doc-status-question">
+            As part of this reopening step, do you also wish to mark the released/published copy of this document (which resides in the release/public database) to say that the document is being revised?
+          </div>
+          <div class="released-doc-status-switch-container">
+            <div class="switch switch-small"><input checked class="released-doc-status-switch" type="checkbox"  name="updateReleasedDocStatus" data-on-text="Yes" data-off-text="No"  ;
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="reopenAcDoc();">Reopen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%= yield :body_end %>
 </body>
 </html>

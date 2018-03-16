@@ -6,7 +6,7 @@ class GenboreeAcUiStg1RuleOutReportController < ApplicationController
 
   respond_to :json
 
-  before_filter :find_project, :authorize, :plugin_proj_settings
+  before_filter :find_project, :authorize, :find_settings
   before_filter :getKbMount, :docIdentifier
   before_filter :userPerms, :genboreeAcSettings
 
@@ -27,13 +27,13 @@ class GenboreeAcUiStg1RuleOutReportController < ApplicationController
   def show()
     @kbDoc = @viewMsg = nil
     @docModel = @refModel = nil
-
+    @acDocVersion = params['version']
+    @acDocVersion = ( @acDocVersion.blank? ? nil : @acDocVersion.to_i ) # should be an actual Fixnum, ideally
     if(@docIdentifier)
       # Get the model...need it for rendering.
       # First, get the doc model
       getModelAsync(@acCurationColl) { |docModel|
         @docModel = docModel
-        $stderr.debugPuts(__FILE__, __method__, '++++++ DEBUG', "Getting doc model #{(docModel.is_a?(Hash) and @lastApiReqErrText.nil?) ? 'SUCCEEDED' : 'FAILED'}")
         # Now that we have the models, async get and process the doc
         processDoc(@docModel)
       }
@@ -48,18 +48,45 @@ class GenboreeAcUiStg1RuleOutReportController < ApplicationController
 
   def processDoc(docModel=@docModel)
     if(docModel and !docModel.is_a?(Exception))
+
       # Get the AC doc from Genboree
-      getDocAsync(@docIdentifier, @acCurationColl) { |kbDoc|
+      getDocAsync( @docIdentifier, @acCurationColl, { :docVersion => @acDocVersion } ) { |kbDoc|
         @kbDoc = kbDoc
         if(@kbDoc.is_a?(BRL::Genboree::KB::KbDoc) and @lastApiReqErrText.nil?)
+          #$stderr.debugPuts(__FILE__, __method__, 'DEBUG', "AC KbDoc raw response:\n\n#{ @lastApiReq.rawRespBody }\n\n")
           @kbDoc = trimDoc(@kbDoc) if(@trim)
         else
           @kbDoc = nil
-          @viewMsg = "#{@lastApiReqErrText} Possibly you do not have permission within Genboree; please speak to a project Administrator to arrange access."
+          @viewMsg = "#{@lastApiReqErrText.to_s.strip.chomp('.') + '.'} Possibly you do not have permission within Genboree; please speak to a project Administrator to arrange access or the document ID is invalid or the version number is not valid for that document."
         end
-        $stderr.debugPuts(__FILE__, __method__, 'DEBUG', "@kbDoc:\n\n#{@kbDoc.class.inspect}")
-        # Regardless of how things look, we should be set up to render some kind of view
-        renderPage(:show)
+
+        # Need current version of @docIdentifier, no matter what.
+        getDocCurrVersionNumAsync( @docIdentifier, @acCurationColl) { |headVersionNum|
+          if( headVersionNum.is_a?(Numeric) )
+            @headVersionNum = headVersionNum
+            if( @acDocVersion )
+              if( @acDocVersion == @headVersionNum )
+                @viewingHeadVersion = true
+              else
+                @viewingHeadVersion = false
+              end
+            else
+              @acDocVersion = @headVersionNum
+              @viewingHeadVersion = true
+            end
+          end
+
+          # . If no version, then viewing current so show permalink and link to versions page
+          # . If version but same as current version, the viewing current so show permalink and link to versions page
+          # . Else not current version, so show permalink, link to current version, and link to versions page
+
+          # Get TemplateSets info doc, determine appropriate TemplateSet, fill template set related instance variables
+          #   so View has access, then render view of this verison of the doc using the correct template set (async)
+          loadTemplateSetAndRender( env, @acDocVersion ) {
+            # Regardless of how things look, we should be set up to render some kind of view
+            renderPage(:show)
+          }
+        }
       }
       # NO CODE HERE. Async.
     else # model is nil or Exception sub-class, no sense doing more requests

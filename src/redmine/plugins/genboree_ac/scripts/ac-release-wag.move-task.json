@@ -1,0 +1,18 @@
+{
+  "mqConf" : "/usr/local/brl/data/messages/conf/ac-release-wag.json",
+  "task" : {
+    "type" : "move",
+    "minMsgAgeSec" : 600,
+    "location" : "/data/mq/test-tmp/ac-release-wag.move-task/output",
+    "archive" : {
+      "active": true,
+      "gzip": true,
+      "location": "/data/mq/test-tmp/ac-release-wag.move-task/archive"
+    }
+  },
+  "logs" : {
+    "stdout" : "/usr/local/brl/local/var/ac-release-wag.move-task.out",
+    "stderr" : "/usr/local/brl/local/var/ac-release-wag.move-task.err"
+  },
+  "lock" : "/usr/local/brl/local/var/ac-release-wag.move-task.lock"
+}

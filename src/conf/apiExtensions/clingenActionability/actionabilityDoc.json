@@ -5,13 +5,13 @@
   "records" : {
     "host" : "localhost",
     "grp"  : "actionability",
-    "kb"   : "actionability",
+    "kb"   : "actionability_release",
     "coll" : "combined_model",
     "login" : "genbadmin"
   },
   "redmine" : {
     "host" : "localhost",
     "mount" : "redmine",
-    "project" : "actionability"
+    "project" : "actionability_release"
   }
 }

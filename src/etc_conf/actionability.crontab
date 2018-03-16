@@ -1,0 +1,1 @@
+* * * * * bash -c 'source $HOME/.bash_profile; ruby ${DIR_TARGET}/rails/redmine/plugins/genboree_ac/scripts/ac-release-wag.mq-submit-task.rb --taskConf=${DIR_DATA}/messages/conf/ac-release-wag.mq-submit-task.json >>${DIR_TARGET}/var/ac-release-wag.mq-submit-task.log 2>&1;'

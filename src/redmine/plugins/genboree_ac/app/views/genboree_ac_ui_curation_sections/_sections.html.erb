@@ -1,0 +1,76 @@
+  <div class="panel-group section-accordian" id="accordionSection">
+    <div class="panel panel-default hide panel-group collapse-with-icon stage-one-section" id="stageOneSectionDiv">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordionSection" href="#stage1SectionPanel">
+            Stage 1
+            <i class="indicator glyphicon   pull-right"></i>
+          </a>
+        </h4>
+      </div>
+      <div id="stage1SectionPanel" class="panel-collapse collapse stage1">
+        <div class="panel-body">
+          <div class="section-child-container">
+            <span id="stage1Survey" class="section-child" onclick="renderStageOneSection();">Survey</span>
+          </div>
+          <div class="section-child-container">
+            <span onclick="renderStageOneStatusSection();" id="stageOneStatus" class="section-child">Status:  <span id="stage1StatusValue" class="value"></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default hide panel-group collapse-with-icon lit-search-section" id="litSearchDiv">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordionSection" href="#litSearchSectionPanel">Literature Search<i class="indicator glyphicon   pull-right"></i></a>
+        </h4>
+      </div>
+      <div id="litSearchSectionPanel" class="panel-collapse collapse">
+        <div class="panel-body"></div>
+      </div>
+    </div>
+    <div class="panel panel-default hide panel-group collapse-with-icon stage-two-section" id="stageTwoSectionDiv">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordionSection" href="#stage2SectionPanel">Stage 2<i class="indicator glyphicon   pull-right"></i></a>
+        </h4>
+      </div>
+      <div id="stage2SectionPanel" class="panel-collapse collapse">
+        <div class="panel-body"></div>
+      </div>
+    </div>
+    <div class="panel panel-default hide panel-group collapse-with-icon score-section" id="scoreSectionDiv">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordionSection" href="#scoreSectionPanel">Score<i class="indicator glyphicon   pull-right"></i></a>
+        </h4>
+      </div>
+      <div id="scoreSectionPanel" class="panel-collapse collapse">
+        <div class="panel-body">
+          <div class="section-child-container">
+            <span id="severityScoreDivInnerDiv" class="section-child" onclick="loadScoreSection('severity');">Severity of outcome</span>
+          </div>
+          <div class="section-child-container">
+            <span id="likelihoodScoreDivInnerDiv" class="section-child" onclick="loadScoreSection('likelihood');">Likelihood of outcome</span>
+          </div>
+          <div class="section-child-container">
+            <span id="effectivenessScoreDivInnerDiv" class="section-child" onclick="loadScoreSection('effectiveness');">Effectiveness of intervention</span>
+          </div>
+          <div class="section-child-container">
+            <span id="natOfIntScoreDivInnerDiv" class="section-child" onclick="loadScoreSection('nature Of Intervention');">Nature of Intervention</span>
+          </div>
+          <div class="section-child-container">
+            <span id="summaryScoreDivInnerDiv" class="section-child" onclick="loadScoreSection('summary');">Summary</span>
+          </div>
+          <div class="section-child-container">
+            <span id="resetScoreDivInnerDiv" class="section-child" onclick="loadScoreSection('reset');">Reset Scores</span>
+          </div>
+          <div class="section-child-container">
+            <span id="statusScoreDivInnerDiv" class="section-child" onclick="loadScoreSection('status');">Status:  <span id="scoreSectionStatusValue" class="value"></span></span>
+          </div>
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>

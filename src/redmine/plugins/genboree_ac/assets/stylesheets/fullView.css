@@ -30,14 +30,21 @@ a {
 }
 
 /* GENERIC PAGE-WIDE popover theming */
-.gbac .popover-title {
+.popover-title {
   background-color: #3b6db0 ;
   font-weight: bold ;
   color: white ;
 }
-.gbac .popover-content {
+.popover-content {
   color: black ;
   font-size: 0.88em ;
+}
+
+.footnote.icon {
+  font-size: 0.7em ;
+  padding: 0;
+  position: relative;
+  top: -0.5em;
 }
 
 /* TOP-MENU */
@@ -212,9 +219,17 @@ a {
   margin-top: 5px ;
 }
 
+.value.keytext {
+  display : inline ;
+}
+.value.keytext.itemLabel {
+  display : block ;
+}
+
 /* KEY-TEXT "attributes/metadata" */
 .attrs {
   margin-bottom: 10px ;
+  margin-top : 10px ;
 }
 .attr {
   margin-left: 14px ;
@@ -228,14 +243,16 @@ a {
 
 .tiered.content {
   margin-left: 0px ;
+  margin-top: 10px ;
 }
 .tiered .itemLabel {
   color: #5D9CEC ;
   font-weight: bold ;
 }
-.tier .name {
+.tier .name, .tier .value {
   font-weight : bold;
 }
+
 
 ul.values.list {
   margin: 0px 0px 0px 0px ;
@@ -450,6 +467,20 @@ div.scores {
 
 .popover.scoreInfo {
   max-width: 400px ;
+}
+
+
+/* INLINE REF NUMBERS */
+
+/* For last span child, this will be overridden with a more specific rule that adds ")" as the after content */
+.refs.inline span.ref.link::after {
+  content: ", ";
+}
+.refs.inline span.ref.link:first-child::before {
+  content: "[";
+}
+.refs.inline span.ref.link:last-child::after {
+  content: "]";
 }
 
 /* REFERENCE LIST */

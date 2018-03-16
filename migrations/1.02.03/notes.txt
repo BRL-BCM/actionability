@@ -1,0 +1,17 @@
+1. Go to your project settings which employ the genboree_ac plugin and decide whether to
+require HTTPS (recommended) or not for API calls. If you don't, keep in mind that Redmine's API key authentication supports
+HTTPBasic authentication and the credential info (account + Redmine API key for account) will be sent unencrypted. Doesn't matter
+for public projects with appropriate permissions of course.
+
+2. You must verify that BOTH the AC "curation" project *AND* the AC "release" project have the Release settings filled in.
+    . Obviously for the "curation" project the settings talk about the release project and KB.
+    . While for the "release" project the same values talk are present and of course talk about itself.
+    . The settings may be blank in the "release" project. This is NOT ALLOWED and will cause AC API & WAG Kafka problems.
+    . The release related settings to review are:
+          "Release KB (full rsrcPath)" - /REST/v1/grp/actionability/kb/actionability_release
+          "Release Track Base Url" - /redmine/projects/actionability_release/genboree_ac/
+
+3. Set in AC "curation" and "release" projects the following property:
+    * Doc-Released MQ Config File = /usr/local/brl/data/messages/conf/ac-release-wag.json
+
+4. In redmine "permissions report" give permission "View Docs Status Page" for everyone

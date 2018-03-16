@@ -1,0 +1,139 @@
+.doc-versions-container {
+  margin-bottom: 30px ;
+  margin-top: 20px ;
+  margin-left: auto ;
+  margin-right: auto ;
+}
+
+.doc-versions-container.releases {
+  width: 80% ;
+}
+.doc-versions-container.versions, /* Old label/class. But in case revert */
+.doc-versions-container.edits {
+  width: 90% ;
+}
+
+.doc-versions-container .panel.versions-panel {
+  border: 3px solid #2e6a8f;
+  box-shadow: 2px 3px 4px 1px rgba(0,0,0,0.35);
+}
+
+/* Not needed. Use bootstrap text-center class
+.doc-versions-container .row.header >div,
+.doc-versions-container .col.release,
+.doc-versions-container .col.date,
+.doc-versions-container .col.outcomes,
+.doc-versions-container .col.interventions  {
+  display: flex ;
+  justify-content: center ;
+}
+*/
+
+.pagination-bar {
+  float: right;
+}
+
+.pagination-bar .btn-disabled {
+  opacity: 0.4 ;
+}
+
+.doc-versions-container .page-title-container {
+  margin-bottom: 10px ;
+}
+
+.doc-versions-container .page-title-container .h5.full-history .btn.btn-default {
+  background-color: #dfdfdf ;
+}
+
+.doc-versions-container .page-title-container .page-title.h.col {
+  display: flex ;
+  justify-content: center ;
+  margin-bottom: 0px ;
+}
+
+.doc-versions-container .page-title-container .row {
+  padding : 0px ;
+}
+
+.doc-versions-container .page-title-container .h.col {
+  margin-top: 10px ;
+  margin-bottom: 2px ;
+  padding-left: 0 ;
+  padding-right : 0 ;
+}
+
+.doc-versions-container  .page-title-container .h3 .value {
+  /* font-size: 20px; */
+  color: #0FA800;
+  font-weight: bold;
+  font-family: "courier";
+  margin-left: 15px;
+}
+
+.doc-versions-container .page-title-container .link {
+  padding-left: 0.5em;
+  padding-right: 0.75em;
+}
+
+.doc-versions-container .page-title-container .link:not(:last-child) {
+  border-right: 1px solid #5fa2dd;
+}
+
+.doc-versions-container .page-title-container .link .fa {
+  margin-right: 0.25em ;
+  font-size: 1.2em ;
+}
+
+.doc-versions-container .page-title-container .link, .doc-versions-container .page-title-container .link .fa,
+.doc-versions-container .page-title-container .link:hover, .doc-versions-container .page-title-container .link .fa:hover,
+.doc-versions-container .page-title-container .link:focus, .doc-versions-container .page-title-container .link .fa:focus,
+.doc-versions-container .page-title-container .link:active, .doc-versions-container .page-title-container .link .fa:active,
+.doc-versions-container .page-title-container .link:visited, .doc-versions-container .page-title-container .link .fa:visited {
+  color : #5fa2dd !important ;
+}
+
+.doc-versions-container .row.header {
+  font-size: 1.2em ;
+  font-weight: bold ;
+  border-bottom: 1px solid #2E6A8F !important ;
+  background-color: #2E6A8f;
+  color: white;
+}
+
+.doc-versions-container .row {
+  margin-left: 0px !important ;
+  margin-right: 0px !important ;
+  padding-bottom: 10px;
+  padding-top: 10px ;
+}
+
+.doc-versions-container .value-row {
+  font-size: 1.3em ;
+}
+
+.doc-versions-container .versions-panel .row.value-row:not(:last-child) {
+  border-bottom : 1px dashed lightgrey ;
+}
+
+.doc-versions-container .container-fluid {
+  padding-right: 0px ;
+}
+
+.doc-versions-container .versions-panel div.value-row:hover {
+  box-shadow: 1px 1px 3px 3px #888 ;
+  background-color: #ffffe6;
+  
+}
+
+.report-link {
+  margin-left: 5px; 
+}
+
+.value-row a.report-link:hover {
+  cursor: pointer ;
+}
+
+.show-more-btn {
+  background-color : #2e6a8f ;
+  border-color : #2e6a8f ;
+}

@@ -1,0 +1,2 @@
+GET ssl certificates
+SET configuration in all files from this directory

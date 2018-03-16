@@ -59,7 +59,7 @@
       },
       "Penetrance.Moderate Penetrance Variant": {
         "stageOneQuestionText": "Is there at least one known pathogenic variant with at least moderate penetrance (>=40%) or moderate relative risk (>=2) in any population?",
-        "stageOneQuestionType": "boolean",
+        "stageOneQuestionType": "enum",
         "stageOneQuestionWidth": 500,
         "stageOneShowQIndex": true,
         "bold": true

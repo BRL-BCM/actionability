@@ -1,0 +1,87 @@
+<div class="modal fade docs-status-modal" id="createNewModal" tabindex="-1" role="dialog" aria-labelledby="createNewModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createNewModalLabel">Create New Gene-Disease Pair</h4>
+      </div>
+      <div class="modal-body">
+        <form  role="form" id="createNewForm">
+          <div class="form-group">
+            <label for="syndromeInput" class="control-label">Syndrome</label>
+            <input type="text" class="form-control" id="syndromeInput"  required>
+            <div class="help-block with-errors"></div>
+          </div>
+          <div class="form-group">
+            <label for="omimInput" class="control-label">Omim</label>
+            <% dataRemote = "#{@kbMount}/projects/#{@projectId}/genboree_ac/data/references/reference/show" %>
+            <input type="text" data-remote="<%=dataRemote%>"  name="omim"  data-role="tagsinput" data-remote-error="This Omim id does not exist." class="form-control" id="omimInput"  required>
+            <div class="help-block with-errors"></div>
+          </div>
+          <div class="form-group">
+            <label for="orphanetInput" class="control-label">Orphanet</label>
+            <input data-role="tagsinput"  type="text" class="form-control" id="orphanetInput" >
+            <div class="help-block with-errors"></div>
+          </div>
+          <div class="form-group">
+            <label for="genesInput" class="control-label">Gene(s)</label>
+            <input  data-genecheck name="gene" data-role="tagsinput" type="text" class="form-control" id="genesInput" required >
+            <div class="help-block with-errors"></div>
+          </div>
+          <div class="alert alert-danger hide submit-failed alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+           <div class="form-group submit-btn-container">
+            <button type="submit" class="btn btn-primary">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade docs-status-modal" id="createNewSuccessModal" tabindex="-1" role="dialog" aria-labelledby="createNewSuccessModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createNewSuccessModalLabel">Success!</h4>
+      </div>
+      <div class="modal-body">
+        <div class="msg">
+          Successfully created a new Actionability Document: <span class="doc-id"></span>
+        </div>
+        <div class="open-curation-yes-no">
+          <div class="msg">
+            Do you wish to open the curation interface to start editing this document?
+          </div>
+          <div class="btn-container">
+            <a href=""  class="btn btn-primary curation-link-btn">Yes</a>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade docs-status-modal" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="errorModalLabel">Error</h4>
+      </div>
+      <div class="modal-body">
+        <div class="error-code">
+          <span class="name" >Error Code: </span>
+          <span class="value"></span>
+        </div>
+        <div class="error-msg">
+          <span class="name" >Error Msg: </span>
+          <span class="value"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -14,6 +14,9 @@ cp -r src/redmine/sencha-deploy/genboree_ac  /usr/local/brl/local/rails/redmine/
 rm -rf /usr/local/brl/local/rails/redmine/plugins/genboree_ac
 cp -r src/redmine/plugins/genboree_ac  /usr/local/brl/local/rails/redmine/plugins/
 
+rm -rf /usr/local/brl/local/etc/conf/actionability*
+cp -r src/etc_conf/* /usr/local/brl/local/etc/conf/
+
 cd ${DIR_TARGET}/rails/redmine
 RAILS_ENV=production rake db:migrate
 RAILS_ENV=production rake redmine:plugins

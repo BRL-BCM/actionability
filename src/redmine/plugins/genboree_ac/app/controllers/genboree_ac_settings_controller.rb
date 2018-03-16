@@ -35,8 +35,6 @@ class GenboreeAcSettingsController < ApplicationController
 
   unloadable
   layout 'base' # Kept although we will almost certainly NOT USE Redmine's layout at all for the content.
-  #before_filter :find_project, :authorize
-  #before_filter :require_admin, :only => [ :create ]
 
   # ------------------------------------------------------------------
   # Possibly helps with API support and certainly API-KEY type authentication.
@@ -47,8 +45,9 @@ class GenboreeAcSettingsController < ApplicationController
   accept_api_auth :index, :create, :delete
 
 
+  # This method and code should not really be needed. Other plugins does. You just add setting UI widget + migration, and "just works"
   def update()
-    $stderr.puts "params: #{params.inspect}"
+    #$stderr.debugPuts(__FILE__, __method__, 'DEBUG', "params:\n\n#{JSON.pretty_generate(params) rescue params.inspect}\n\n")
     useRedmineLayout = ( params['useRedmineLayout']['aa'] == '0' ? false : true )
     gbHost = params['gbHost']
     gbGroup = params['gbGroup']
@@ -60,10 +59,16 @@ class GenboreeAcSettingsController < ApplicationController
     gbActGenesColl = params['gbActGenesColl']
     gbActOrphanetCollRsrcPath = params['gbActOrphanetCollRsrcPath']
     gbReleaseKbRsrcPath = params['gbReleaseKbRsrcPath']
+    gbTemplateSetsColl = params['gbTemplateSetsColl']
+    gbUrlMountDir = params['gbUrlMountDir']
+    releasedMqConf = params['gbReleasedMqConf']
+    isAcReleaseTrack = ( params['isAcReleaseTrack']['bool'] == '1' ? true : false )
+    requireHttpsForApi = ( params['requireHttpsForApi']['bool'] == '1' ? true : false )
+    gbReleaseKbBaseUrl = params['gbReleaseKbBaseUrl']
     projectId = params['project_id']
     genboreeAcRec = GenboreeAc.find_by_project_id(projectId)
     if(genboreeAcRec.nil?) # Put in a new entry
-      GenboreeAc.create( :actionabilityColl => gbActCurationColl, :referencesColl => gbActRefColl, :genesColl => gbActGenesColl, :project_id => projectId, :gbHost => gbHost, :gbGroup => gbGroup, :gbKb => gbKb, :useRedmineLayout => useRedmineLayout, :headerIncludeFileLoc => headerIncludeFileLoc, :footerIncludeFileLoc => footerIncludeFileLoc, :gbActOrphanetCollRsrcPath => gbActOrphanetCollRsrcPath, :gbReleaseKbRsrcPath => gbReleaseKbRsrcPath)
+      GenboreeAc.create( :actionabilityColl => gbActCurationColl, :referencesColl => gbActRefColl, :genesColl => gbActGenesColl, :project_id => projectId, :gbHost => gbHost, :gbGroup => gbGroup, :gbKb => gbKb, :useRedmineLayout => useRedmineLayout, :headerIncludeFileLoc => headerIncludeFileLoc, :footerIncludeFileLoc => footerIncludeFileLoc, :gbActOrphanetCollRsrcPath => gbActOrphanetCollRsrcPath, :gbReleaseKbRsrcPath => gbReleaseKbRsrcPath, :templateSetsColl => gbTemplateSetsColl, :urlMountDir => gbUrlMountDir, :isAcReleaseTrack => isAcReleaseTrack, :releaseKbBaseUrl => gbReleaseKbBaseUrl, :releasedMqConf => releasedMqConf, :requireHttpsForApi => requireHttpsForApi )
     else # update existing record
       genboreeAcRec.gbHost = gbHost
       genboreeAcRec.gbGroup = gbGroup
@@ -76,11 +81,16 @@ class GenboreeAcSettingsController < ApplicationController
       genboreeAcRec.genesColl = gbActGenesColl
       genboreeAcRec.gbActOrphanetCollRsrcPath = gbActOrphanetCollRsrcPath
       genboreeAcRec.gbReleaseKbRsrcPath = gbReleaseKbRsrcPath
+      genboreeAcRec.templateSetsColl = gbTemplateSetsColl
+      genboreeAcRec.urlMountDir = gbUrlMountDir
+      genboreeAcRec.isAcReleaseTrack = isAcReleaseTrack
+      genboreeAcRec.releaseKbBaseUrl = gbReleaseKbBaseUrl
+      genboreeAcRec.releasedMqConf = releasedMqConf
+      genboreeAcRec.requireHttpsForApi = requireHttpsForApi
       genboreeAcRec.save
     end
     flash[:notice] = "Settings updated."
     kbMount = RedmineApp::Application.routes.default_scope[:path]
-    
     redirect_to "#{kbMount}/projects/#{params['project_ident']}/settings/genboreeAc"
   rescue GenboreeAcSettingsControllerError => e
     $stderr.puts "ERROR - #{__method__}() => Exception! #{e.class} - #{e.message}\n#{e.backtrace.join("\n")}\n\n"
@@ -94,10 +104,7 @@ class GenboreeAcSettingsController < ApplicationController
   private
   
   def setProjectId(params)
-    $stderr.puts "params:\n#{params.inspect}"
     prjRec = Project.find(params[:id])
-    $stderr.puts "prjRec:\n#{prjRec.inspect}"
     @projectId = prjRec.id
   end
-  
 end

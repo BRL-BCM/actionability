@@ -17,12 +17,41 @@ module GenboreeAcHelper
 
   # Make additional before_filter methods available from genboree_generic plugin.
   include GenericHelpers::BeforeFiltersHelper
+  include GenericHelpers::PermHelper
   include PluginHelpers::BeforeFiltersHelper
   include ProjectHelpers::BeforeFiltersHelper
+  include PluginHelpers::PluginSettingsHelper
+  extend  PluginHelpers::PluginSettingsHelper  # so also available as "class" method when doing settings
   include LitSearchHelper
+  include GenboreeAcHelper::TemplateSetHelper
+
+  # Ensure certain key helpers that are (a) included by this module AND (b) which contain methods
+  #   we want available in Views, are EXPLICITLY included by the Controller, so as to trigger their
+  #   automatic helper_method registration. Otherwise, while the methods will be available to the
+  #   Controller (because included here), they WILL NOT BE available to any VIEWS without doing
+  #   this to arrage the auto-registration of helper_methods.
+  def self.included(includingClass)
+    includingClass.send(:include, GenericHelpers::PermHelper)
+  end
 
   BOUNDARY_EXTRACTOR = /boundary\s*=\s*([^; \t\n]+)/
   PLUGIN_SETTINGS_MODEL_CLASS = GenboreeAc
+  PLUGIN_PROJ_SETTINGS_FIELDS = [
+    :useRedmineLayout,
+    :gbHost,
+    :gbGroup,
+    :gbKb,
+    :headerIncludeFileLoc,
+    :footerIncludeFileLoc,
+    :gbActCurationColl,
+    :gbActRefColl,
+    :gbActGenesColl,
+    :gbActOrphanetCollRsrcPath,
+    :gbReleaseKbRsrcPath,
+    :gbTemplateSetsColl,
+    :gbUrlMountDir,
+    :isAcReleaseTrack
+  ]
 
   # ----------------------------------------------------------------
   # BEFORE_FILTERS - use by symbol with the before_filter Rails method in your controller
@@ -31,11 +60,6 @@ module GenboreeAcHelper
   # Must have @project set before calling Redmine's authorize before_filter.
   # Must have @project set before certain other plugin filters.
   # Typical way to handle this is to register this before_filter first, before other before_filters.
-  
-
-  def getKbMount()
-    @kbMount =  RedmineApp::Application.routes.default_scope[:path].to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ') ;
-  end
 
   def docIdentifier()
     @docIdentifier = params['doc']
@@ -46,12 +70,13 @@ module GenboreeAcHelper
   def genboreeAcSettings()
     kbProjectSettings()
     @genboreeAc = @pluginProjSettings
-    $stderr.debugPuts(__FILE__, __method__, 'DEBUG', "host,kb,coll: #{@gbHost.inspect}, #{@gbGroup.inspect}, #{@gbKb.inspect} ; @genboreeAc:\n\n#{@genboreeAc.inspect}\n\n")
     @acCurationColl = @genboreeAc.actionabilityColl.to_s.strip
     @acRefColl = @genboreeAc.referencesColl.to_s
     @acGenesColl = @genboreeAc.genesColl.to_s
     @acOrphanetCollRsrcPath = @genboreeAc.gbActOrphanetCollRsrcPath
     @gbReleaseKbRsrcPath = @genboreeAc.gbReleaseKbRsrcPath
+    @acTemplateSetsColl = @genboreeAc.templateSetsColl.to_s.strip
+    @urlMountDir = @genboreeAc.urlMountDir.to_s.strip
     return @genboreeAc
   end
 
@@ -76,14 +101,14 @@ module GenboreeAcHelper
     #dbKey = (gbHost == '10.15.5.109' ? "DB:10.15.5.109" : "DB:taurine.brl.bcmd.bcm.edu")
     gbAuthHost = getGbAuthHostName()
     dbconn = getDbConn(gbAuthHost)
-    login = User.current.login
+    login = @currRmUser.login
     retVal = dbconn.getUserByName(login)
     # NO: Must cease doing this 'project_id' param approach. STOP adding 'project_id' to params when missing
     #  (basically forcing a bad approach inherited from genbore_kb). Go through @project or @projectId--see find_project
     #  and note that it, and several other methods here, are useful as before_filters to get a standard env.
     #@project = Project.find(params['project_id']) # <= bad
     #$stderr.puts "@project: #{@project.inspect}\n login: #{login.inspect}\n retVal: #{retVal.inspect}"
-    if(!retVal.nil? and !retVal.empty? and User.current.member_of?(@project))
+    if(!retVal.nil? and !retVal.empty? and @currRmUser.member_of?(@project))
       userInfo = GenboreeAcHelper::HostAuthMapHelper.getHostAuthMapForUserAndHostName(retVal, gbKbHost, gbAuthHost, dbconn)
       retVal = userInfo
     else
@@ -202,7 +227,7 @@ module GenboreeAcHelper
     refDocs = []
     if(refDocIds and refDocIds.size > 0)
       uniqRefIds = refDocIds.uniq
-      $stderr.debugPuts(__FILE__, __method__, "STATUS", "The doc #{@kbDoc.getRootPropVal().inspect} has #{refDocIds.size} reference mentions ; #{uniqRefIds.inspect.size} unique reference docs.")
+      #$stderr.debugPuts(__FILE__, __method__, "STATUS", "The doc #{@kbDoc.getRootPropVal().inspect} has #{refDocIds.size} reference mentions ; #{uniqRefIds.inspect.size} unique reference docs.")
       rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/docs?matchProp=Reference&matchMode=exact&detailed=true&matchValues={vals}"
       fieldMap  = { :coll => @acRefColl, :vals => uniqRefIds }
       refApiResult = apiGet(rsrcPath, fieldMap)
@@ -220,7 +245,7 @@ module GenboreeAcHelper
     gbAccounts = []
     if(logins and logins.size > 0)
       uniqLogins = logins.uniq
-      $stderr.debugPuts(__FILE__, __method__, "STATUS", "The doc #{@kbDoc.getRootPropVal().inspect} has #{logins.size} login mentions ; #{uniqLogins.size} unique logins.")
+      #$stderr.debugPuts(__FILE__, __method__, "STATUS", "The doc #{@kbDoc.getRootPropVal().inspect} has #{logins.size} login mentions ; #{uniqLogins.size} unique logins.")
       uniqLogins.each { |login|
         gba = getGbAccount(login)
         gbAccounts << gba unless(gba.nil? or gba.empty?)
@@ -327,7 +352,7 @@ module GenboreeAcHelper
         }
       end
     }
-    $stderr.debugPuts(__FILE__, __method__, "STATUS", "Sorted unique reference list by order of APPEARANCE in doc. Replaced reference URIs with appropriate index number in kbDoc.")
+    #$stderr.debugPuts(__FILE__, __method__, "STATUS", "Sorted unique reference list by order of APPEARANCE in doc. Replaced reference URIs with appropriate index number in kbDoc.")
     return
   end
 
@@ -398,11 +423,8 @@ module GenboreeAcHelper
       fieldMap[:grp]  = @gbGroup unless(fieldMap[:grp].to_s =~ /\S/)
       fieldMap[:kb]   = @genboreeAc.gbKb.strip unless(fieldMap[:kb].to_s =~ /\S/)
       login, pass = getUserInfo(@gbHost)
-      $stderr.puts "login: #{login.inspect}"
       if(login and pass)
         # Make call, using fieldMap
-        $stderr.puts "API GET:\n  rsrcPath: #{rsrcPath.inspect}"
-        $stderr.puts "API GET:\n  fieldMap: #{fieldMap.inspect}"
         apiCaller = nil
         uri = nil
         if(login == :anon)
@@ -412,13 +434,13 @@ module GenboreeAcHelper
           apiCaller = BRL::REST::ApiCaller.new(@gbHost, rsrcPath, login, pass)
           uri = apiCaller.makeFullApiUri(fieldMap)
         end
-        $stderr.debugPuts(__FILE__, __method__, "STATUS", "About to get doc")
+        #$stderr.debugPuts(__FILE__, __method__, "STATUS", "About to get doc")
         if(payload.nil?)
           apiCaller.get( fieldMap )
         else
           apiCaller.get(fieldMap, payload.to_json)
         end
-        $stderr.debugPuts(__FILE__, __method__, "STATUS", "Got doc.")
+        #$stderr.debugPuts(__FILE__, __method__, "STATUS", "Got doc.")
         # Parse response
         parseOk = apiCaller.parseRespBody() rescue nil
         unless(apiCaller.succeeded? and parseOk)
@@ -443,7 +465,7 @@ module GenboreeAcHelper
         retVal[:respObj]  = @respObj
         retVal[:status]   = apiCaller.httpResponse.code.to_i
       else
-        if(User.current.member_of?(@project))
+        if(@currRmUser.member_of?(@project))
           @httpResponse = "ERROR: Current Redmine user does not seem to be registered with Genboree. Are they a locally-registered Redmine user? That is NOT supported, ONLY Genboree users are supported. Or perhaps the session has timed out."
           @gbGroup = @gbHost = ""
         else
@@ -473,14 +495,14 @@ module GenboreeAcHelper
       login, pass = getUserInfo(@gbHost)
       if(login and pass)
         # Make call, using fieldMap
-        $stderr.puts "API PUT:\n  rsrcPath: #{rsrcPath.inspect}"
-        $stderr.puts "API PUT:\n  fieldMap: #{fieldMap.inspect}"
+        #$stderr.puts "API PUT:\n  rsrcPath: #{rsrcPath.inspect}"
+        #$stderr.puts "API PUT:\n  fieldMap: #{fieldMap.inspect}"
         apiCaller = BRL::REST::ApiCaller.new(@gbHost, rsrcPath, login, pass)
         apiCaller.put( fieldMap, payload )
         # Parse response
         parseOk = apiCaller.parseRespBody() rescue nil
         # Expose response
-        $stderr.debugPuts(__FILE__, __method__, "DEBUG", "API PUT SUCCESS? #{apiCaller.succeeded?.inspect} (hr: #{apiCaller.httpResponse}) ; ")
+        #$stderr.debugPuts(__FILE__, __method__, "DEBUG", "API PUT SUCCESS? #{apiCaller.succeeded?.inspect} (hr: #{apiCaller.httpResponse}) ; ")
         unless(apiCaller.succeeded? and parseOk)
           @respObj =
           {
@@ -523,14 +545,14 @@ module GenboreeAcHelper
       login, pass = getUserInfo(@gbHost)
       if(login and pass)
         # Make call, using fieldMap
-        $stderr.puts "API DELETE:\n  rsrcPath: #{rsrcPath.inspect}"
-        $stderr.puts "API DELETE:\n  fieldMap: #{fieldMap.inspect}"
+        #$stderr.puts "API DELETE:\n  rsrcPath: #{rsrcPath.inspect}"
+        #$stderr.puts "API DELETE:\n  fieldMap: #{fieldMap.inspect}"
         apiCaller = BRL::REST::ApiCaller.new(@gbHost, rsrcPath, login, pass)
         apiCaller.delete( fieldMap )
         # Parse response
         parseOk = apiCaller.parseRespBody() rescue nil
         # Expose response
-$stderr.debugPuts(__FILE__, __method__, "DEBUG", "API DELETE SUCCESS? #{apiCaller.succeeded?.inspect} (hr: #{apiCaller.httpResponse}) ; resp body:\n\n#{apiCaller.respBody}")
+        #$stderr.debugPuts(__FILE__, __method__, "DEBUG", "API DELETE SUCCESS? #{apiCaller.succeeded?.inspect} (hr: #{apiCaller.httpResponse}) ; resp body:\n\n#{apiCaller.respBody}")
         unless(apiCaller.succeeded? and parseOk)
           @respObj =
           {
@@ -569,7 +591,7 @@ $stderr.debugPuts(__FILE__, __method__, "DEBUG", "API DELETE SUCCESS? #{apiCalle
       fieldMap[:kb]   = @genboreeAc.gbKb.strip unless(fieldMap[:kb].to_s =~ /\S/)
       login, pass = getUserInfo(@gbHost)
       if(login and pass)
-        retVal = ApiCaller.new(@gbHost, rsrcPath, login, pass)
+        retVal = BRL::REST::ApiCaller.new(@gbHost, rsrcPath, login, pass)
       end
     end
     return [retVal, fieldMap]

@@ -5,7 +5,7 @@
   "records" : {
     "host" : "localhost",
     "grp"  : "actionability",
-    "kb"   : "actionability",
+    "kb"   : "actionability_release",
     "coll" : "combined_model",
     "login" : "genbadmin"
   },

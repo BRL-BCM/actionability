@@ -1,0 +1,3 @@
+MAKE backup BEFORE !
+/usr/local/brl/local/rails/redmine/plugins/genboree_ac/misc/acHistoryCompaction.rb >acHistComp.out 2>acHistComp.err
+

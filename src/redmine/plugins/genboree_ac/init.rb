@@ -31,11 +31,6 @@ Redmine::Plugin.register :genboree_ac do
             :default =>
             {
               'path'                  => '/var/genboree_ac/{PROJECT}', # ? doesn't seem to be used or at least not correctly
-              :producerTemplatesPaths => {
-                :fullView => Rails.root.join('plugins', 'genboree_ac', 'templates', 'fullView'),
-                :stg1RuleOutRpt => Rails.root.join('plugins', 'genboree_ac', 'templates', 'stg1RuleOutRpt'),
-                :stg2SummaryRpt => Rails.root.join('plugins', 'genboree_ac', 'templates', 'stg2SummaryRpt')
-              },
               'index'                 => 'index.html',
               #'extensions'  => ".*",
               'menu'                  => 'Actionability Curation'
@@ -46,6 +41,10 @@ Redmine::Plugin.register :genboree_ac do
     permission :gbac_view_sencha, { :genboree_ac_sencha => [ :index, :show ] }
     # Who can view the ENTRY page?
     permission :gbac_view_entry, { :genboree_ac_ui_entry => [ :show] }
+    # Who can view the doc versions page ?
+    permission :gbac_view_doc_versions, { :genboree_ac_ui_doc_versions => [ :show] }
+    # Who can view the docs status page
+    permission :gbac_view_docs_status, { :genboree_ac_ui_docs_status => [ :show] }
     # Who can view the various VIEW/REPORT pages?
     permission :gbac_view_full_view, { :genboree_ac_ui_full_view => [ :show] }
     permission :gbac_view_stg1_rule_out_report, { :genboree_ac_ui_stg1_rule_out_report => [ :show ] }
@@ -87,10 +86,23 @@ Redmine::Plugin.register :genboree_ac do
       permission :gbac_finalize_scoring, { :genboree_ac_ui_curation => [ :show] }
       # Who can rollback "completed" sections in the curation page?
       permission :gbac_rollback_completion, { :genboree_ac_ui_curation => [ :show] }
+    # TMP / TEST permissions
+      permission :gbac_test_put_delete, {
+          :put_proto => [ :putGrp ],
+          :delete_proto => [ :deleteGrp ]
+      }
+    # API - SPECIFIC PERMISSIONS (checked in API controller(s))
+      # @todo Allow permission control on Anonymous access even when Project is NOT public (like in VBR; requires genboree_generic methods)
+      # @todo But may need per-project control over whether to enable Anonymous API access. e.g. Yes for Release, but No [only private API] for Curation track.
+      # @todo Make sure private works with Redmine API token based auth.
+      # @todo Make sure can force https. Have nginx add an http header with original protocol; genboree_generic methods to examine and answer questions. Project settings to require (e.g. for private access via Redmine API token)
+      permission :gbac_api_view_doc, { :genboree_ac_api_doc_summary => [ :full ] }
+      permission :gbac_api_view_doc_summary, { :genboree_ac_api_doc_summary => [ :dispatcher ] }
+      permission :gbac_api_view_doc_all_scores, { :genboree_ac_api_doc_summary => [ :all_scores ] }
   }
   menu :project_menu, :genboree_ac,
     {
-      :controller => "genboree_ac_ui_entry",
+      :controller => "genboree_ac_ui_docs_status",
       :action => "show"
     },
     :caption => Proc.new { Setting.plugin_genboree_ac['menu'] },

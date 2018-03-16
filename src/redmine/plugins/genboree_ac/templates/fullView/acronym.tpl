@@ -1,2 +1,0 @@
-<!-- INLINED -->
-<span><%= @acronym %></span>

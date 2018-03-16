@@ -19,9 +19,16 @@ en:
   gbac_gb_ac_genes_coll: Actionability Genes Collection
   gbac_gb_ac_orphanet_coll: Orphanet Mirror Collection (full rsrcPath)
   gbac_gb_ac_release_kb: Release KB (full rsrcPath)
+  gbac_gb_ac_template_sets_coll: Template Sets Collection
+  gbac_gb_ac_url_mount_dir: Url Mount Dir
+  gbac_gb_ac_release_kb_base_url: Release Track Base Url
   gbac_use_redmine_layout: Use Redmine Layout
   gbac_header_file_path: Header File Path
   gbac_footer_file_path: Footer File Path
+  gbac_is_ac_release_track: Is AC Release Track?
+  gbac_require_https_for_api: Require HTTPS for Private API Access?
+  gbac_gb_ac_released_mq_conf: Doc-Released MQ Config File
+
   gbac_label_description: Description
   gbac_button_edit: Update
   gbac_settings_label_dir: Content Dir Pattern
@@ -33,7 +40,11 @@ en:
   gbac_label_gb_filedir_size: Size
   gbac_label_gb_filedir_updated: Last Updated
   gbac_label_gb_filedir_actions: Actions
-  
+
+  # "Version" [for curation track] vs "Release" [for release/published track]
+  # . use Rails pluralize, capitalize/titleize as appropriate for variations
+  gbac_label_version: edit
+  gbac_label_release: release
   
   permission_gbac_view_sencha: View Sencha Assets
   permission_gbac_view_entry: View Entry Page
@@ -41,6 +52,8 @@ en:
   permission_gbac_view_stg1_rule_out_report: View Stage 1 Rule-Out Report Page
   permission_gbac_view_stg2_summary_report: View Stage 2 Summary Report Page
   permission_gbac_view_curation: View Curation Page
+  permission_gbac_view_doc_versions: View Doc Versions Page
+  permission_gbac_view_docs_status: View Docs Status Page
   permission_gbac_view_lit_search: View Literature Search Info
   permission_gbac_view_stage1: View Stage 1/Survey
   permission_gbac_view_stage2: View Stage 2

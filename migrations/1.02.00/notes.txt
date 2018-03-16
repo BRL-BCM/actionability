@@ -1,0 +1,6 @@
+Set values for the 4 new columns appropriately (on plugin's settings page):
+     - Template Sets Collection => TemplateSets (Both Editing and Release KBs)
+     - Url Mount Dir => "/redmine/projects/actionability_release/genboree_ac/" (Release KB) and "/redmine/projects/actionability/genboree_ac/" (Editing/Working KB)
+     - Release Track Base Url => "/redmine/projects/actionability_release/genboree_ac/" (Editing/Working KB) and empty for the Release KB
+     - Is AC Release Track ? => Checked for the release KB and keep unchecked for the editing KB.
+Set appropriate permissions for the new 'Doc Versions' page in the 'Roles and Permissions' interface accessible to redmine admin. Ideally available to everyone for now ?

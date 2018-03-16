@@ -1,14 +1,15 @@
 #!/usr/bin/env ruby
 
-require 'genboreeTools'
-
 
 # copy static files
-`cp ./src/data/conf/actionability.yaml /usr/local/brl/data/conf/`
-`cp -r ./src/data/redmine /usr/local/brl/data/`
+`cp -r ./src/data/* /usr/local/brl/data/`
+`chmod 600 /usr/local/brl/data/messages/conf/ac-release-wag.client-ssl.no-jks.properties`
 
 # install app
 `./install_app.sh`
+
+
+require 'genboreeTools'
 
 
 group_name = 'actionability'

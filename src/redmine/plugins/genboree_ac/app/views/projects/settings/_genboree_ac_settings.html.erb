@@ -12,6 +12,9 @@
     gbHost = ""
     gbGroup = ""
     gbKb = ""
+    templateSetsColl = ""
+    urlMountDir = ""
+    releaseKbBaseUrl = ""
     if(@genboreeAc)
       if(@genboreeAc.useRedmineLayout == false)
         checkBoxCheck = false
@@ -27,6 +30,16 @@
       gbKb = @genboreeAc.gbKb
       gbActOrphanetCollRsrcPath = @genboreeAc.gbActOrphanetCollRsrcPath
       gbReleaseKbRsrcPath = @genboreeAc.gbReleaseKbRsrcPath
+      templateSetsColl = @genboreeAc.templateSetsColl
+      templateSetsColl = "" if(templateSetsColl.nil?)
+      urlMountDir = @genboreeAc.urlMountDir
+      urlMountDir = "" if(urlMountDir.nil?)
+      releaseKbBaseUrl = @genboreeAc.releaseKbBaseUrl
+      releaseKbBaseUrl = "" if(releaseKbBaseUrl.nil?)
+      releasedMqConf = @genboreeAc.releasedMqConf
+      releasedMqConf = '' if(releasedMqConf.nil?)
+      isAcReleaseTrack = (@genboreeAc.isAcReleaseTrack or false)
+      requireHttpsForApi = ( @genboreeAc.requireHttpsForApi or false )
     end
   %>
   <%= form_tag("../../../genboree_ac/update") do %>
@@ -64,6 +77,24 @@
       </td></tr>
       <tr><td><b><%= label_tag "gbac_gb_ac_release_kb", l(:gbac_gb_ac_release_kb) %></b></td><td>
         <%= text_field_tag "gbReleaseKbRsrcPath", gbReleaseKbRsrcPath, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gbac_gb_ac_template_sets_coll", l(:gbac_gb_ac_template_sets_coll) %></b></td><td>
+        <%= text_field_tag "gbTemplateSetsColl", templateSetsColl, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gbac_gb_ac_url_mount_dir", l(:gbac_gb_ac_url_mount_dir) %></b></td><td>
+        <%= text_field_tag "gbUrlMountDir", urlMountDir, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gbac_gb_ac_release_kb_base_url", l(:gbac_gb_ac_release_kb_base_url) %></b></td><td>
+        <%= text_field_tag "gbReleaseKbBaseUrl", releaseKbBaseUrl, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "gbac_gb_ac_released_mq_conf", l(:gbac_gb_ac_released_mq_conf) %></b></td><td>
+        <%= text_field_tag "gbReleasedMqConf", releasedMqConf, {:size => 50 }    %>
+      </td></tr>
+      <tr><td><b><%= label_tag "isAcReleaseTrack", l(:gbac_is_ac_release_track) %></b></td><td>
+        <%= check_box "isAcReleaseTrack", 'bool', { :checked => isAcReleaseTrack }, checked_value = "1", unchecked_value = "0"   %>
+      </td></tr>
+      <tr><td><b><%= label_tag "requireHttpsForApi", l(:gbac_require_https_for_api) %></b></td><td>
+        <%= check_box "requireHttpsForApi", 'bool', { :checked => requireHttpsForApi }, checked_value = "1", unchecked_value = "0"   %>
       </td></tr>
     </table>
     <dl style="padding-left:20px;">

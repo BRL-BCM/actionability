@@ -13,6 +13,7 @@ module GenboreeAcHelper
     end
 
     def getMysql2Client()
+      $stderr.debugPuts(__FILE__, __method__, '!!DEPRECATED!!', "This should not be used. There is genboree_generic support. Probably because synchronous 'apiGet' method is in use or something.\n\nOFFENDING CODE TRACE (caller of #{__method__}):\n\n#{caller[0,20].join("\n")}\n\n")
       maxRetries = MAX_RETRIES
       driver = @dbrc.driver
       driverFields = driver.dup.split(/:/)

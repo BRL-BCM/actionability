@@ -129,17 +129,24 @@
             triggerElem.popover(poConf) ;
             triggerElem.popover() ;
           }
-//          triggerElem.on('click', function() {
-//            // hide all showing popovers (one at a time), then show the one we care about
-//            $(".poTrigger").each( function (idx) { $(this).popover('hide') } ) ;
-//            // Use the two-show trick to deal with odd initialize problem
-//            $(this ).popover('toggle') ;
-//          }) ;
         }) ;
-        // Opt-in enable all popovers spec'd in html
-        // $(function () {
-        //   $('[data-toggle="popover"]').popover()
-        // }) ;
+
+        // Opt-in enable all footnote popovers spec'd in html
+        // - Configure to appear on click and disappear on click-away
+        // - Also attached to <body> to avoid certain display bugs when resizing
+        // - Because we have some dynamically generated HTML to show, the approach here
+        //   copies that HTML from a HIDDEN child div whose HTML content was generated appropriately from data.
+        $(function () {
+          $('.footnote[data-toggle="popover"]').popover( {
+            html : true, // Going to get popover html from a currently hidden element that has proper html
+            container: 'body',
+            trigger : 'focus', // Comment out to debug as icon 'click'
+            content : function() {
+              return $(this).find('.popover-content').html() ;
+            }
+          } )
+        }) ;
+
       }) ;
       // TEST/EXPLORE: User permission map
       <%# = @userPermsJS %>
@@ -147,6 +154,7 @@
 
     <%= stylesheet_link_tag 'fullView', :media => 'all', :plugin => 'genboree_ac' %>
     <%= javascript_include_tag 'helpers', :plugin => 'genboree_ac' %>
+    <%= javascript_include_tag 'helpers', :plugin => 'genboree_generic' %>
 <% end %>
 
 <!-- PAGE -->
@@ -182,28 +190,28 @@
         <span class="fa fa-comment"></span>
       </div>
     <% end %>
-    <% if(User.current.allowed_to?(:gbac_view_stg2_summary_report, @project)) %>
+    <% if(@currRmUser.allowed_to?(:gbac_view_stg2_summary_report, @project)) %>
         <div id="stg2SummaryRpt" class="iconBtn stg1RuleOutRpt" title="View Stage 2 - Summary Report">
           <a href="<%= @kbMount %>/projects/<%= @projectId %>/genboree_ac/ui/stg2SummaryRpt?doc=<%= @docIdentifier %>">
             <span class="fa fa-file-text"></span>
           </a>
         </div>
     <% end %>
-    <% if(User.current.allowed_to?(:gbac_view_stg1_rule_out_report, @project)) %>
+    <% if(@currRmUser.allowed_to?(:gbac_view_stg1_rule_out_report, @project)) %>
         <div id="stg1RuleOutRpttBtn" class="iconBtn stg1RuleOutRpt" title="View Stage 1 - Rule Out Report">
           <a href="<%= @kbMount %>/projects/<%= @projectId %>/genboree_ac/ui/stg1RuleOutRpt?doc=<%= @docIdentifier %>">
             <span class="fa fa-list-ul"></span>
           </a>
         </div>
     <% end %>
-    <% if(User.current.allowed_to?(:gbac_view_curation, @project)) %>
+    <% if(@currRmUser.allowed_to?(:gbac_view_curation, @project)) %>
       <div id="editBtn" class="iconBtn edit" title="Edit Document">
         <a href="<%= @kbMount %>/projects/<%= @projectId %>/genboree_ac/ui/curation?doc=<%= @docIdentifier %>">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
       </div>
     <% end %>
-    <% if(User.current.allowed_to?(:gbac_view_entry, @project)) %>
+    <% if(@currRmUser.allowed_to?(:gbac_view_entry, @project)) %>
       <div id="entryBtn" class="iconBtn entry" title="Back to Document List/Search">
         <a href="<%= @kbMount %>/projects/<%= @projectId %>/genboree_ac/ui/entry">
           <span class="glyphicon glyphicon-list-alt"></span>
@@ -229,3 +237,17 @@
     <% end %>
   </div>
 </div>
+
+<% content_for :body_end do %>
+  <%# Sort the ref links spans sensibly w.r.t. their neighbor spans %>
+  <script type="text/javascript">
+    $(window).load( function() {
+      setTimeout( function() {
+        $( ".refs.inline" ).each( function( idx ) {
+          sortUsingNestedText( this, "span", "a[href^='#ref_']", true ) ;
+        } ) ;
+      }, 500 ) ;
+    });
+  </script>
+<% end %>
+

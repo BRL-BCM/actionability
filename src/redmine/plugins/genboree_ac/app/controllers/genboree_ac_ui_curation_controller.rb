@@ -54,13 +54,14 @@ class GenboreeAcUiCurationController < ApplicationController
     # @todo dynamically set @removeLayout from database record
     @docIdentifier = params['doc'] || ''
     @genboreeAc = GenboreeAc.find_by_project_id(Project.find(@project))
-    @userPermsJS = pluginUserPerms(:genboree_ac, @project, User.current, :as => :javascript)
+    @userPermsJS = pluginUserPerms(:genboree_ac, @project, @currRmUser, :as => :javascript)
+    @userPermsObj = pluginUserPerms(:genboree_ac, @project, @currRmUser)
+    #$stderr.puts "pluginPerms:\n#{pup.inspect}"
     @litSearchSourceJSON = getLitSearchSourceHashJSON()
-    $stderr.puts "@litSearchSourceJSON:\n#{@litSearchSourceJSON.inspect}"
-    #$stderr.puts "DEBUG - #{__method__}() => admin? #{User.current.admin?().inspect} ;;; User:\n\n#{User.current.inspect}"
     render :show
   rescue GenboreeAcUiCurationControllerError => e
-    $stderr.puts "ERROR - #{__method__}() => Exception! #{e.class} - #{e.message}\n#{e.backtrace.join("\n")}\n\n"
+    $stderr.puts "\n\n******** DEV BUG **********\nFAILED TO USE debugPuts.\n\n******* ENDING *******\n\n"
+    #$stderr.puts "ERROR - #{__method__}() => Exception! #{e.class} - #{e.message}\n#{e.backtrace.join("\n")}\n\n"
     render_error e.message
   end
 

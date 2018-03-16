@@ -6,8 +6,8 @@ module GenboreeAcHelper
     # BEFORE_FILTERS - useful before_filter methods for your controller
     # ----------------------------------------------------------------
     def userPerms()
-      @userPerms    = pluginUserPerms(:genboree_ac, @project, User.current)
-      @userPermsJS  = pluginUserPerms(:genboree_ac, @project, User.current, :as => :javascript)
+      @userPerms    = pluginUserPerms(:genboree_ac, @project, @currRmUser)
+      @userPermsJS  = pluginUserPerms(:genboree_ac, @project, @currRmUser, :as => :javascript)
     end
 
     # ----------------------------------------------------------------

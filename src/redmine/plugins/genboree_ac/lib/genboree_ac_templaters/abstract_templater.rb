@@ -9,12 +9,9 @@ module GenboreeAcTemplaters
 
     attr_reader :docProducer, :refsProducer
 
-    def initialize(templateSet, modelHash, opts)
-      @templateSet, @modelHash = templateSet, modelHash
-      # If want to expose this in Redmine UI, it's a Redmine-wide setting for the genboree_ac plugin, not a project-specific one
-      defaultPluginSettings = Redmine::Plugin.find('genboree_ac').settings[:default]
-      tplPath = defaultPluginSettings[:producerTemplatesPaths][@templateSet].to_s
-      optsBase = { :templateDir => tplPath, :relaxedRootValidation => true }
+    def initialize(templateGroup, modelHash, opts)
+      @templateGroup, @modelHash = templateGroup, modelHash
+      optsBase = { :templateDir => '.', :relaxedRootValidation => true }
       @opts = optsBase.merge(opts)
       @docProducer = @refsProducer = nil
     end

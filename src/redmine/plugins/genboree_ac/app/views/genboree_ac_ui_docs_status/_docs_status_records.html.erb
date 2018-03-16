@@ -1,0 +1,90 @@
+<div class="hide total-docs-count-hidden-container" data-total-docs-count="<%=@totalDocs%>"></div>
+
+<%
+  rowCls = "row value-row"
+  rowIdx = 0
+  @kbMount = RedmineApp::Application.routes.default_scope[:path].to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe
+  @viewObj.each { |vo|
+    stage1Status = vo['stage1Status']
+    docStatus = vo["docStatus"]
+    docId = vo['docId']
+    genes = vo['genes']
+    syndrome = vo['syndrome']
+    lastEdited = vo['lastEdited']
+    #linkPrefix = (@releaseKB ? "clingen-actionability-release?": "clingen-actionability?")
+    stg1Link = "ui/stg1RuleOutRpt?doc=#{docId}"
+    stg2Link = "ui/stg2SummaryRpt?doc=#{docId}"
+    docVerLink = "ui/docVersions?doc=#{docId}"
+    # Use full path. Relative path has some issues with sencha microloader. Curation page does not work properly.
+    curationLink = "#{@kbMount}/projects/#{@projectId}/genboree_ac/ui/curation?doc=#{docId}"
+
+%>
+  <div data-doc-id="<%=docId%>" class="<%= rowCls %>">
+    
+    
+    <%# Syndrome Column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:syndrome] %> col syndrome text-center">
+      <%= syndrome %>
+    </div>
+    
+    <%# Genes Column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:genes] %> col genes text-center">
+      <%= genes.join(", ") %>
+    </div>
+    
+    <%# Last Edited Column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:lastEdited] %> col last-edited text-center">
+      <%
+        lastEditedEls = lastEdited.split(" ")
+        #$stderr.puts "lastEditedEls: #{lastEditedEls.inspect}; lastEdited: #{lastEdited.inspect}"
+        timeEl = lastEditedEls.pop
+      %>
+      <span class="value" data-toggle="tooltip" data-html="true" title="<b>Date:</b> <%=lastEditedEls.join(" ")%><br/><b>Time:</b> <%=timeEl%>" ><%= lastEditedEls.join(" ") %></span>
+    </div>
+    
+    <%# Status Column %>
+    <div class="col-xs-12 <%= @colSizes[:md][:status] %> col status text-center">
+      <div class="row">
+        <div class="col-xs-12 col-md-8 ">
+          <span class="label label-info"><%= docStatus %></span>
+        </div>
+        <div class="col-xs-12 col-md-4 ">
+          <span>
+            <%
+              if(docStatus != "In Preparation")
+            %>
+              <% if( userAllowed?( :gbac_view_stg1_rule_out_report ) ) %>
+                <a href="<%=stg1Link%>" data-trigger="hover" data-toggle="tooltip" title="View Stage1 report" class="report-link"><i class="fa fa-list-ul"></i></a>
+              <% end %>
+              <%# Show stage 2 report link icon IF user has permission to view it %>
+              <% if( userAllowed?( :gbac_view_stg2_summary_report ) and stage1Status != "Failed" ) %>
+                <a href="<%=stg2Link%>" data-trigger="hover" class="report-link" data-toggle="tooltip" title="View Stage2 report"><i class="fa fa-file-text"></i></a>
+              <% end %>
+              <% versionsLinkTooltip = ( @settingsRec.isAcReleaseTrack? ? l(:gbac_label_release) : l(:gbac_label_version) ) %>
+              <% if( userAllowed?( :gbac_view_doc_versions ) ) %>
+                <a href="<%=docVerLink%>" data-trigger="hover" data-toggle="tooltip" title="View all <%=versionsLinkTooltip%> versions of this document" class="report-link"><i class="fa fa-history"></i></a>
+              <% end %>
+              <% if( userAllowed?( :gbac_view_curation ) and !@settingsRec.isAcReleaseTrack? ) %>
+                <a href="<%=curationLink%>" data-trigger="hover" data-toggle="tooltip" title="Go to the curation interface" class="report-link"><i class="glyphicon glyphicon-edit"></i></a>
+              <% end %>
+            <%
+              end
+            %>
+          </span>  
+        </div>
+      </div>
+    </div>
+    
+    <%# Actions Column %>
+    <!--<div class="col-xs-12 <%= @colSizes[:md][:actions] %> col actions text-center">
+      
+    </div>-->
+    
+  </div>
+  
+  
+<%
+    rowIdx += 1
+  }
+%>
+

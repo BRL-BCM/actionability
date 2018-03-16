@@ -50,7 +50,6 @@ class GenboreeAcSenchaController < ApplicationController
 
   # Can this show a ToC (in Redmine layout) for files in dir if there is no index.html?
   def index()
-    $stderr.puts "DEBUG - #{__method__}() => admin? #{User.current.admin?().inspect} ;;; User:\n\n#{User.current.inspect}"
     @tocFiles = []
     @reqRsrc = params[:request_path]
     $stderr.puts "@reqRsrc: #{@reqRsrc.inspect}"
@@ -130,16 +129,9 @@ class GenboreeAcSenchaController < ApplicationController
     real = ( (origReqRsrc.nil? || origReqRsrc.empty?) ? projDir : File.join(projDir, origReqRsrc) )
     dir = File.expand_path(projDir)
     real = File.expand_path(real)
-    $stderr.puts "DEBUG - #{__method__}() => dir: #{dir.inspect} ;;; real: #{real.inspect}"
     raise GenboreeAcSenchaControllerError, "ERROR: tried to access a content file or directory (#{origReqRsrc.inspect}) that doesn't actually exist on disk." unless(real.starts_with?(dir) && File.exist?(real))
     return real
   end
-
-
-
-
-  
-
 
   def showContent(diskPath=@diskPath, origReqRsrc=@origReqRsrc)
     @content = @title = nil
@@ -152,7 +144,4 @@ class GenboreeAcSenchaController < ApplicationController
   rescue GenboreeAcSenchaControllerError => grcce
     render_error grcce.message
   end
-
-
-
 end

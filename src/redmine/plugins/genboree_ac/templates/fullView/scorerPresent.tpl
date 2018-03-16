@@ -1,2 +1,0 @@
-<!-- INLINED -->
-<span><%= @scorer %></span>

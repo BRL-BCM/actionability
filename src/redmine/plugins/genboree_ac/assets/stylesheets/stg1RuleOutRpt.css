@@ -47,6 +47,34 @@ a {
   color: red !important ;
 }
 
+.rptTitle .links {
+  font-size: 80%;
+  line-height: 1;
+  margin: 5px;
+}
+
+.rptTitle .links .link {
+  padding-left: 0.5em;
+  padding-right: 0.75em;
+}
+
+.rptTitle .links .link:not(:last-child) {
+  border-right: 1px solid #5fa2dd;
+}
+
+.rptTitle .links .link .fa {
+  margin-right: 0.25em ;
+  font-size: 104% ;
+}
+
+.rptTitle .links .link, .rptTitle .links .link .fa,
+.rptTitle .links .link:hover, .rptTitle .links .link .fa:hover,
+.rptTitle .links .link:focus, .rptTitle .links .link .fa:focus,
+.rptTitle .links .link:active, .rptTitle .links .link .fa:active,
+.rptTitle .links .link:visited, .rptTitle .links .link .fa:visited {
+  color : #5fa2dd !important ;
+}
+
 /* REPORT TABLE */
 .rptTable {
 }
@@ -96,6 +124,19 @@ a {
   .rptTable .colBody.rightCol {
     padding-left : 5px !important;
   }
+}
+
+.rptTable .notice-title {
+  margin: 10px 0px 0px 0px;
+  padding-left: 5px;
+  color: red ;
+}
+
+.rptTable .notice-text {
+  font-weight: bold;
+  margin-top: 15px;
+  font-style: italic ;
+  color: red ;
 }
 
 .rptTable .question {

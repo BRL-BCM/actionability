@@ -1,11 +1,17 @@
 #require 'plugins/genboree_ac/app/helpers/gene_review_helper'
 
 class GenboreeAcReferencesController < ApplicationController
-  include GenboreeAcHelper
-
+  include GenboreeAcDocHelper
+  
   respond_to :json
-  before_filter :find_project
-
+  before_filter :find_project, :genboreeAcSettings
+  STAGE2_SECTIONS_REF_ORDER = [
+    { :name => "Nature of the Threat", :props => ["Prevalence of the Genetic Disorder", "Clinical Features", "Natural History"] },
+    { :name => "Effectiveness of Intervention", :props => ["Patient Managements", "Surveillances", "Family Managements", "Circumstances to Avoid"] },
+    { :name => "Threat Materialization Chances", :props => ["Mode of Inheritance", "Prevalence of the Genetic Mutation", "Penetrances", "Relative Risks", "Expressivity Notes"] },
+    { :name => "Acceptability of Intervention", :props => ["Natures of Intervention"] },
+    { :name => "Condition Escape Detection", :props => ["Chances to Escape Clinical Detection"] }
+  ]
   unloadable
 
   def show()
@@ -33,8 +39,19 @@ class GenboreeAcReferencesController < ApplicationController
             apiReq2.bodyFinish {
               headers2 = apiReq2.respHeaders
               status2 = apiReq2.respStatus
+              docs = apiReq2.respBody['data']
+              docHash = {}
+              sortedDocs = []
+              docs.each { |doc|
+                kbd = BRL::Genboree::KB::KbDoc.new(doc)
+                refId = kbd.getPropVal("Reference")
+                docHash[refList[refId]] = kbd
+              }
+              docs.size.times { |ii|
+                sortedDocs <<  docHash[ii]
+              }
               headers2['Content-Type'] = "text/plain"
-              apiReq2.sendToClient( status2, headers2, JSON.generate( apiReq2.respBody ) )
+              apiReq2.sendToClient( status2, headers2, JSON.generate( { "data" => sortedDocs } ) )
             }
             apiReq2.get(rsrcPath2, fieldMap2)
           else
@@ -56,16 +73,99 @@ class GenboreeAcReferencesController < ApplicationController
     collName = params['acRefColl']
     otherRefSubDoc = JSON.parse(params['value'])
     refDoc = { "Reference" => { "value" => refId, "properties" => {  "Category" => { "value" => 'Other' }, "Other Reference" => { "properties" => otherRefSubDoc }  } } }
-    fieldMap  = { :coll => collName, :doc => refId }
     rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}?detailed=true"
-    apiResult = apiPut(rsrcPath, refDoc.to_json, fieldMap)
-    respObj = apiResult[:respObj]
-    respond_with(respObj, :status => apiResult[:status], :location => "")
+    targetHost = getHost()
+    gbGroup = getGroup()
+    gbkb = getKb()
+    fieldMap  = { :grp => gbGroup, :kb => gbkb, :coll => collName, :doc => refId }
+    apiReq = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+    apiReq.bodyFinish {
+      headers = apiReq.respHeaders
+      status = apiReq.respStatus
+      headers['Content-Type'] = "text/plain"
+      apiReq.sendToClient(status, headers, JSON.generate(apiReq.respBody))
+    }
+    apiReq.put(rsrcPath, fieldMap, JSON.generate(refDoc))
+  end
+  
+  # Remove a specific reference from an actionability doc
+  # Will remove all citations of the reference.
+  def remove()
+    refId = params['refId']
+    collName = params['acCurationColl']
+    docId     = params['docIdentifier']
+    rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}?detailed=true"
+    targetHost = getHost()
+    gbGroup = getGroup()
+    gbkb = getKb()
+    fieldMap  = { :grp => gbGroup, :kb => gbkb, :coll => collName, :doc => docId }
+    apiReq = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+    apiReq.bodyFinish {
+      begin
+        if(apiReq.respStatus >= 200 and apiReq.respStatus < 400)
+          kbd = BRL::Genboree::KB::KbDoc.new(apiReq.respBody['data'])
+          # First remove the reference from under Stage 2
+          paths = kbd.getMatchingPaths(/References$/)
+          paths.each { |path|
+            refs = kbd.getPropItems(path)
+            if(refs and !refs.empty?)
+              idx = 0
+              refs.each { |refObj|
+                refkbd =  BRL::Genboree::KB::KbDoc.new(refObj)
+                if(refkbd.getPropVal('Reference').split("/").last == refId)
+                  refs.delete_at(idx)
+                end
+                idx += 1
+              }
+            end
+          }
+          # Next remove the reference under RefMetadata (which contains any user uploaded file for that reference)
+          refMdDoc = kbd.getSubDoc("ActionabilityDocID.RefMetadata")['RefMetadata']
+          if(!refMdDoc.nil? and refMdDoc.key?('items'))
+            refs = kbd.getPropItems("ActionabilityDocID.RefMetadata")
+            if(refs and !refs.empty?)
+              idx = 0
+              refs.each { |refObj|
+                refkbd =  BRL::Genboree::KB::KbDoc.new(refObj)
+                if(refkbd.getPropVal('Reference').split("/").last == refId)
+                  refs.delete_at(idx)
+                end
+                idx += 1
+              }
+            end
+          end
+          # Upload the doc
+          apiReq2 = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+          apiReq2.bodyFinish {
+            headers = apiReq2.respHeaders
+            headers['Content-Type'] = "text/plain"
+            apiReq2.sendToClient(apiReq2.respStatus, headers, JSON.generate(apiReq2.respBody))
+          }
+          apiReq2.put(rsrcPath, fieldMap, JSON.generate(kbd))
+        else
+          headers = apiReq.respHeaders
+          headers['Content-Type'] = "text/plain"
+          apiReq.sendToClient(apiReq.respStatus, headers, JSON.generate(apiReq.respBody))
+        end
+      rescue => err
+        headers = apiReq.respHeaders
+        headers['Content-Type'] = "text/plain"
+        respObj = { "status" => { "statusCode" => "Internal Server Error", "msg" => err }}
+        $stderr.debugPuts(__FILE__, __method__, 'ERROR', err)
+        $stderr.debugPuts(__FILE__, __method__, 'ERROR-TRACE', err.backtrace.join("\n"))
+        apiReq.sendToClient(500, headers, JSON.generate(respObj))
+      end
+      
+      
+      
+    }
+    apiReq.get(rsrcPath, fieldMap)
   end
   
   def reference()
-    matchValue = params['value']
-    category = params['category']
+    # This action is also used by the create new modal for checking if the omim id entered exists or not. Implement backwards-compatible default to support it.
+    matchValue = ( params['value'] ? params['value'] : params['omim'].split(",").last )
+    category = ( params['category'] ? params['category'] : "OMIM" )
     # First, check to see if the reference entered by the user already exists in our collection.
     rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/docs?"
     props = []
@@ -90,65 +190,96 @@ class GenboreeAcReferencesController < ApplicationController
     else
       categoryValue = "Other"
     end
-    collName = params['acRefColl']
+    collName = @acRefColl
+    targetHost = getHost()
+    gbGroup = getGroup()
+    gbkb = getKb()
     if(categoryValue != "Other")
       acOnetCollRsrcPath = params['acOnetCollRsrcPath']
-      fieldMap  = { :coll => collName, :mv => matchValue, :props => props }
-      apiResult  = apiGet(rsrcPath, fieldMap)
-      respObj = nil
-      if(apiResult[:status] == 200 and apiResult[:respObj]['data'] and !apiResult[:respObj]['data'].empty?)
-        $stderr.debugPuts(__FILE__, __method__, "STATUS", "Found reference in collection.")
-        respObj = { "data" => apiResult[:respObj]['data'][0] }
-        respond_with(respObj, :status => apiResult[:status], :location => "")
-      else
-        $stderr.debugPuts(__FILE__, __method__, "STATUS", "Reference not found in collection.")
-        rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}?detailed=true"
-        fieldMap  = { :coll => collName, :doc => "" }
-        if(category == 'OMIM')
-          refDoc = { "Reference" => { "value" => "", "properties" => {  "Category" => { "value" => categoryValue }, categoryValue => { "value" => matchValue, "properties" => { } }  } } }
-          apiResult = apiPut(rsrcPath, refDoc.to_json, fieldMap)
-          respObj = apiResult[:respObj]
-          respond_with(respObj, :status => apiResult[:status], :location => "")
-        elsif(category == 'GeneReview' || category == 'Pubmed')
-          $stderr.debugPuts(__FILE__, __method__, "STATUS", "Start async lookup for GeneReview.")
-          grh = GeneReviewHelper.new(matchValue)
-          grh.env = env
-          grh.targetHost = getHost()
-          grh.gbGroup = getGroup()
-          grh.gbKb = getKb()
-          grh.collName = collName
-          grh.insertNonGRRefAfterCheck = true if(category == 'Pubmed')
-          EM.next_tick {
-            grh.start()
-          }
-          throw :async
-        elsif(category == 'Orphanet')
-          # We will have to look up the Orphanet mirror collection
-          apiResult  = apiGet("#{acOnetCollRsrcPath.chomp("?")}/doc/{doc}?", { :doc => matchValue })
-          if(apiResult[:status] != 200) # The cache does not have this reference.
-            respond_with({}, :status => apiResult[:status], :location => "")
-          else
-            # We have a document. Insert it in the references collection
-            $stderr.debugPuts(__FILE__, __method__, "STATUS", "Found reference in mirror/cache collection.")
-            doc = apiResult[:respObj]['data']
-            refDoc = { "Reference" => { "value" => "", "properties" => {  "Category" => { "value" => categoryValue }, "Orphanet" => doc['Orphanet']  } } }
-            $stderr.puts "refdoc:\n\n#{JSON.pretty_generate(refDoc)}"
-            apiResult = apiPut(rsrcPath, refDoc.to_json, fieldMap)
-            respObj = apiResult[:respObj]
-            respond_with(respObj, :status => apiResult[:status], :location => "")
+      fieldMap  = { :grp => gbGroup, :kb => gbkb, :coll => collName, :mv => matchValue, :props => props }
+      apiReq = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+      apiReq.bodyFinish {
+        headers = apiReq.respHeaders
+        status = apiReq.respStatus
+        headers['Content-Type'] = "text/plain"
+        respObj = nil
+        if(status == 200 and apiReq.respBody['data'] and !apiReq.respBody['data'].empty?)
+          $stderr.debugPuts(__FILE__, __method__, "STATUS", "Found reference in collection.")
+          #respObj = { "data" => apiResult[:respObj]['data'][0] }
+          apiReq.sendToClient(status, headers, JSON.generate({ "data" => apiReq.respBody['data'][0] }))
+          #respond_with(respObj, :status => apiResult[:status], :location => "")
+        else
+          $stderr.debugPuts(__FILE__, __method__, "STATUS", "Reference not found in collection.")
+          rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}?detailed=true"
+          fieldMap  = { :grp => gbGroup, :kb => gbkb, :coll => collName, :doc => "" }
+          if(category == 'OMIM')
+            refDoc = { "Reference" => { "value" => "", "properties" => {  "Category" => { "value" => categoryValue }, categoryValue => { "value" => matchValue, "properties" => { } }  } } }
+            
+            apiReq2 = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+            apiReq2.bodyFinish{
+              headers = apiReq2.respHeaders
+              status = apiReq2.respStatus
+              headers['Content-Type'] = "text/plain"
+              apiReq2.sendToClient(status, headers, JSON.generate(apiReq2.respBody) ) 
+            }
+            apiReq2.put(rsrcPath, fieldMap, JSON.generate(refDoc))
+          elsif(category == 'GeneReview' || category == 'Pubmed')
+            $stderr.debugPuts(__FILE__, __method__, "STATUS", "Start async lookup for GeneReview.")
+            grh = GeneReviewHelper.new(matchValue)
+            grh.env = env
+            grh.targetHost = getHost()
+            grh.gbGroup = getGroup()
+            grh.gbKb = getKb()
+            grh.collName = collName
+            grh.insertNonGRRefAfterCheck = true if(category == 'Pubmed')
+            EM.next_tick {
+              grh.start()
+            }
+          elsif(category == 'Orphanet')
+            # We will have to look up the Orphanet mirror collection
+            apiReq2 = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+            apiReq2.bodyFinish{
+              headers = apiReq2.respHeaders
+              status = apiReq2.respStatus
+              if(status != 200) # The cache does not have this reference.
+                #respond_with({}, :status => apiResult[:status], :location => "")
+                apiReq2.sendToClient(status, headers, JSON.generate({}) ) 
+              else
+                # We have a document. Insert it in the references collection
+                $stderr.debugPuts(__FILE__, __method__, "STATUS", "Found reference in mirror/cache collection.")
+                doc = apiReq2.respBody['data']
+                refDoc = { "Reference" => { "value" => "", "properties" => {  "Category" => { "value" => categoryValue }, "Orphanet" => doc['Orphanet']  } } }
+                $stderr.puts "refdoc:\n\n#{JSON.pretty_generate(refDoc)}"
+                apiReq3 = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+                apiReq3.bodyFinish{
+                  headers = apiReq3.respHeaders
+                  status = apiReq3.respStatus
+                  headers['Content-Type'] = "text/plain"
+                  apiReq3.sendToClient(status, headers, JSON.generate(apiReq3.respBody) ) 
+                }
+                apiReq3.put(rsrcPath, fieldMap, JSON.generate(refDoc))
+              end
+            }
+            apiReq2.get("#{acOnetCollRsrcPath.chomp("?")}/doc/{doc}?", { :doc => matchValue })
           end
         end
-      end
+      }
+      apiReq.get(rsrcPath, fieldMap)
     else # There's no lookup for 'Other' reference. Just do the insert
       # matchValue is the subdoc for other reference
       otherRefSubDoc = JSON.parse(matchValue)
       refDoc = { "Reference" => { "value" => "", "properties" => {  "Category" => { "value" => 'Other' }, "Other Reference" => { "properties" => otherRefSubDoc }  } } }
       $stderr.puts "refdoc:\n\n#{JSON.pretty_generate(refDoc)}"
-      fieldMap  = { :coll => collName, :doc => "" }
+      fieldMap  = { :grp => gbGroup, :kb => gbkb, :coll => collName, :doc => "" }
       rsrcPath = "/REST/v1/grp/{grp}/kb/{kb}/coll/{coll}/doc/{doc}?detailed=true"
-      apiResult = apiPut(rsrcPath, refDoc.to_json, fieldMap)
-      respObj = apiResult[:respObj]
-      respond_with(respObj, :status => apiResult[:status], :location => "")
+      apiReq2 = GbApi::JsonAsyncApiRequester.new(env, targetHost, @project)
+      apiReq2.bodyFinish{
+        headers = apiReq2.respHeaders
+        status = apiReq2.respStatus
+        headers['Content-Type'] = "text/plain"
+        apiReq2.sendToClient(status, headers, JSON.generate(apiReq2.respBody) ) 
+      }
+      apiReq2.put(rsrcPath, fieldMap, JSON.generate(refDoc))
     end
     
   end
@@ -156,39 +287,60 @@ class GenboreeAcReferencesController < ApplicationController
   # ------------------------------------------------------------------
   # PRIVATE HELPERS
   # ------------------------------------------------------------------
-  def createRefList(doc)
-    props = doc['ActionabilityDocID']['properties']['Stage 2']['properties']
-    refList = {}
-    props.each_key {|prop|
-      if(prop == 'Outcomes' or prop == 'Status' or prop == 'Summary')
-        next
+  def addRefsToRefList(refItems, refList, refIdx)
+    refItems.each { |refObj|
+      kbRefObj =  BRL::Genboree::KB::KbDoc.new(refObj)
+      refUrl = kbRefObj.getPropVal('Reference')
+      refId = refUrl.split("/").last
+      if(refId and !refList.key?(refId))
+        refList[refId] = refIdx
+        refIdx += 1
       end
-      if(props[prop]['properties'])
-        props[prop]['properties'].each_key {|subprop|
-          if(props[prop]['properties'][subprop]['items'] and props[prop]['properties'][subprop]['items'].size > 0)
-            rootProp = props[prop]['properties'][subprop]['items'][0].keys[0]
-            props[prop]['properties'][subprop]['items'].each_index {|idx|
-              props[prop]['properties'][subprop]['items'][idx][rootProp]['properties'].each_key { |childProp|
-                if(childProp == 'References' and props[prop]['properties'][subprop]['items'][idx][rootProp]['properties'][childProp].key?('items'))
-                  props[prop]['properties'][subprop]['items'][idx][rootProp]['properties'][childProp]['items'].each_index {|refObjIdx|
-                    refObj = props[prop]['properties'][subprop]['items'][idx][rootProp]['properties'][childProp]['items'][refObjIdx]
-                    refId = refObj['Reference']['value'].split("/").last
-                    refList[CGI.unescape(refId)] = nil  if(!refId.nil?)
-                  }
-                end
+    }
+    return refIdx 
+  end
+  
+  def scanForRefs(props, refList, refIdx)
+    if(props.key?('References') and props['References']['items'] and props['References']['items'].size > 0)
+      refItems = props['References']['items']
+      refIdx = addRefsToRefList(refItems, refList, refIdx)
+    end
+    if(props.key?('Additional Tiered Statements') and props['Additional Tiered Statements']['items'] and props['Additional Tiered Statements']['items'].size > 0)
+      atsItems = props['Additional Tiered Statements']['items']
+      atsItems.each { |atsObj|
+        kbAtsObj =   BRL::Genboree::KB::KbDoc.new(atsObj)
+        atsProps = kbAtsObj.getPropProperties("RecommendationID")
+        if(atsProps.key?("References"))
+          refItems = kbAtsObj.getPropItems("RecommendationID.References")
+          refIdx = addRefsToRefList(refItems, refList, refIdx)
+        end
+      }
+    end
+    return refIdx
+  end
+  
+  def createRefList(doc)
+    kbd = BRL::Genboree::KB::KbDoc.new(doc)
+    props = kbd.getPropProperties('ActionabilityDocID.Stage 2')
+    refList = {}
+    refIdx = 0
+    STAGE2_SECTIONS_REF_ORDER.each { |obj|
+      prop = obj[:name]
+      childProps = obj[:props]
+      if(props.key?(prop))
+        childProps.each{ |cp|
+          if(props[prop]['properties'].key?(cp))
+            if(props[prop]['properties'][cp].key?('properties'))
+              refIdx = scanForRefs(props[prop]['properties'][cp]['properties'], refList, refIdx)
+            elsif(props[prop]['properties'][cp].key?('items'))
+              propItems = props[prop]['properties'][cp]['items']
+              propItems.each { |pitem|
+                kbdItem = BRL::Genboree::KB::KbDoc.new(pitem)
+                rootProp = pitem.keys[0]
+                itemProps = kbdItem.getPropProperties(rootProp)
+                refIdx = scanForRefs(itemProps, refList, refIdx)
               }
-            }
-          elsif(props[prop]['properties'][subprop]['properties'])
-            props[prop]['properties'][subprop]['properties'].each_key {|childProp|
-              if(childProp == 'References' and props[prop]['properties'][subprop]['properties'][childProp].key?('items'))
-                props[prop]['properties'][subprop]['properties'][childProp]['items'].each_index {|refObjIdx|
-                  refObj = props[prop]['properties'][subprop]['properties'][childProp]['items'][refObjIdx]
-                  refId = refObj['Reference']['value'].split("/").last
-                  refList[CGI.unescape(refId)] = nil  if(!refId.nil?)
-                }
-              end
-
-            }
+            end
           end
         }
       end

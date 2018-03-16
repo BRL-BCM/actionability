@@ -5,7 +5,7 @@ class GenboreeAcUiStg2SummaryReportController < ApplicationController
 
   respond_to :json
 
-  before_filter :find_project, :authorize
+  before_filter :find_project, :authorize, :find_settings
   before_filter :getKbMount, :docIdentifier
   before_filter :userPerms, :genboreeAcSettings
 
@@ -26,13 +26,15 @@ class GenboreeAcUiStg2SummaryReportController < ApplicationController
   def show()
     @kbDoc = @viewMsg = nil
     @docModel = @refModel = nil
+    @acDocVersion = params['version']
+    @acDocVersion = ( @acDocVersion.blank? ? nil : @acDocVersion.to_i ) # should be an actual Fixnum, ideally
 
     if(@docIdentifier)
       # Get the models...need them for rendering.
       # First, get the doc model
       getModelAsync(@acCurationColl) { |docModel|
         @docModel = docModel
-        $stderr.debugPuts(__FILE__, __method__, '++++++ DEBUG', "Getting doc model #{(docModel.is_a?(Hash) and @lastApiReqErrText.nil?) ? 'SUCCEEDED' : 'FAILED'}")
+        #$stderr.debugPuts(__FILE__, __method__, '++++++ DEBUG', "Getting doc model #{(docModel.is_a?(Hash) and @lastApiReqErrText.nil?) ? 'SUCCEEDED' : 'FAILED'}")
         # Now get ref model
         getModelAsync(@acRefColl) { |refModel|
           @refModel = refModel
@@ -52,7 +54,7 @@ class GenboreeAcUiStg2SummaryReportController < ApplicationController
   def processDoc(docModel=@docModel, refModel=@refModel)
     if(docModel and !docModel.is_a?(Exception) and refModel and !refModel.is_a?(Exception))
       # Get AC doc from Genboree
-      getDocAsync(@docIdentifier, @acCurationColl) { |kbDoc|
+      getDocAsync(@docIdentifier, @acCurationColl, { :docVersion => @acDocVersion } ) { |kbDoc|
         @kbDoc = kbDoc
         if(@kbDoc.is_a?(BRL::Genboree::KB::KbDoc) and @lastApiReqErrText.nil?)
           @kbDoc = trimDoc(@kbDoc) if(@trim)
@@ -66,7 +68,34 @@ class GenboreeAcUiStg2SummaryReportController < ApplicationController
               # Something went wrong
               @viewMsg = "#{@lastApiReqErrText} Error while trying to retrieve the reference details for each reference mentioned in the Actionability doc #{@docIdentifier.inspect}."
             end
-            renderPage(:show)
+
+            # Need current version of @docIdentifier, no matter what.
+            getDocCurrVersionNumAsync( @docIdentifier, @acCurationColl) { |headVersionNum|
+              if( headVersionNum.is_a?(Numeric) )
+                @headVersionNum = headVersionNum
+                if( @acDocVersion )
+                  if( @acDocVersion == @headVersionNum )
+                    @viewingHeadVersion = true
+                  else
+                    @viewingHeadVersion = false
+                  end
+                else
+                  @acDocVersion = @headVersionNum
+                  @viewingHeadVersion = true
+                end
+              end
+
+              # . If no version, then viewing current so show permalink and link to versions page
+              # . If version but same as current version, the viewing current so show permalink and link to versions page
+              # . Else not current version, so show permalink, link to current version, and link to versions page
+
+              # Get TemplateSets info doc, determine appropriate TemplateSet, fill template set related instance variables
+              #   so View has access, then render view of this verison of the doc using the correct template set (async)
+              loadTemplateSetAndRender( env, @acDocVersion ) {
+                # Regardless of how things look, we should be set up to render some kind of view
+                renderPage(:show)
+              }
+            }
           }
           # NO CODE HERE! Async.
         else

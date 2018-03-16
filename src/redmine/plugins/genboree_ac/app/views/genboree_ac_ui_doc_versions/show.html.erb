@@ -1,0 +1,137 @@
+<%
+  kbMount = RedmineApp::Application.routes.default_scope[:path].to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe
+  projectId = @projectId.to_s.gsub(/'/, "\\\\'").gsub(/\n/, ' ').html_safe
+  baseHref = ((@urlMountDir.nil? or @urlMountDir.empty?) ? "/clingen-actionability/" : @urlMountDir)
+  verOrRelLabel = ( @settingsRec.isAcReleaseTrack ? l(:gbac_label_release) : l(:gbac_label_version) )
+  # Build link to release history
+  if( @settingsRec.isAcReleaseTrack or @settingsRec.releaseKbBaseUrl.blank? )
+    releaseHistoryLink = ''
+  else
+    releaseKbBaseUrl= @settingsRec.releaseKbBaseUrl.to_s.strip
+    releaseKbBaseUrl.chomp!('/')
+    releaseHistoryLink = "#{releaseKbBaseUrl}/ui/docVersions?doc=#{@docIdentifier}"
+  end
+%>
+<% content_for :header_tags do %>
+  <base href="<%=baseHref%>">
+<% end %>
+<%
+  if(@errorFound == false)
+%>
+  <script type="text/javascript">
+    var showLimit = <%==@showLimit%> ;
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip(); 
+    });
+    var skip = <%==@skip%> ;
+    var minAcDocVer = <%==@minAcDocVer%> ;
+    var kbMount = '<%==kbMount%>' ;
+    var projectId = '<%==projectId%>' ;
+    var docId = '<%==@docIdentifier%>' ;
+    var totalVers = '<%==@totalVers%>' ;
+
+    function toggleFullHistory(elem) {
+      $(elem).toggleClass('btn-default') ;
+      $(elem).toggleClass('btn-primary') ;
+      if( $(elem).hasClass('btn-primary') ) {
+        // Then showing full history
+        $(elem).text( 'Shown' );
+      }
+      else {
+        // Full history is hidden
+        $(elem).text( 'Hidden' ) ;
+      }
+      // Show/hide the iterim edit rows (the non-release rows)
+      // - jquery has built in toggle for this
+      $('.row.value-row:not(.released)').toggle() ;
+
+      return false ; // Stop event bubbling
+    }
+
+    // On page load, arrange to have the iteriem edit rows 9the non-release rows) HIDDEN BY DEFAULT
+    // (This works but is sort of incompatible/unnecessary with the "Show More" functionality. Raises a lot of inconsistencies and more nuances when there is Show More functionality). See below.
+    //$( function() { $('.row.value-row:not(.released)').toggle() ;} ) ;
+
+  </script>
+  <div class="<%= verOrRelLabel.pluralize %> doc-versions-container container-fluid">
+    <div class="page-title-container">
+      <div class="row">
+        <span class="page-title h2 h col col-xs-12"><%= verOrRelLabel.capitalize %> History</span>
+      </div>
+      <% unless( @settingsRec.isAcReleaseTrack or ( @viewObj and @viewObj.first['releaseVer'].nil? ) ) %>
+        <div class="row">
+          <span class="links col col-xs-12 text-center">
+            <a class="release-history link" href="<%= releaseHistoryLink %>"><span class="fa fa-history"></span>Public Release History</a>
+          </span>
+        </div>
+      <% end %>
+      <div class="row">
+        <span class="syndrome h3 h col col-xs-12"><span class="name">Syndrome:</span> <span class="value"><%=@syndrome%></span></span>
+      </div>
+      <div class="row">
+        <span class="genes h3 h col col-xs-12"><span class="name">Gene/Gene Panel:</span> <span class="value"><%=@genes.join(", ")%></span></span>
+      </div>
+      <%# This works but is sort of incompatible/unnecessary with the "Show More" functionality. Raises a lot of inconsistencies and more nuances when there is Show More functionality %>
+      <%# unless( @settingsRec.isAcReleaseTrack ) %>
+      <% if( false ) %> <%# disabled currently, see above %>
+        <span class="full-history h5">Full version history: <button type="button" class="btn btn-default btn-xs" onclick="toggleFullHistory(this)">Hidden</button></span>
+      <% end %>
+    </div>
+    <div class="panel panel-info versions-panel"> 
+      <div class="row header">
+        <%# Version column if displayed %>
+        <% if( @colSizes[:md][:version] ) %>
+          <div class="col-xs-12 <%= @colSizes[:md][:version] %> col text-center">
+            <%= l(:gbac_label_version).capitalize %> #
+          </div>
+        <% end %>
+        <%# Release column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:release] %> col text-center">
+          <%= l(:gbac_label_release).capitalize %>
+        </div>
+        <%# Status column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:status] %> col text-center">
+          Status
+        </div>
+        <%# Date column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:date] %> col text-center">
+          Date
+        </div>
+        <%# Outcomes column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:outcomes] %> col text-center">
+          Outcomes
+        </div>
+        <%# Interventions column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:interventions] %> col text-center">
+          Interventions
+        </div>
+        <%# Guidelines column %>
+        <div class="col-xs-12 <%= @colSizes[:md][:guidelines] %> col text-center">
+          Number of guidelines
+        </div>
+      </div>
+      <%= render :partial => "genboree_ac_ui_doc_versions/version_records" %>
+      <%
+        if(@totalVers > @showLimit and @endReached == false)
+      %>
+        <div class="row show-more-btn-container">
+          <div class="show-more col col-xs-12 text-center">
+            <button class="btn btn-info show-more-btn" type="button" onclick="showMore()">Show More</button>
+          </div>
+        </div>
+      <%
+        end
+      %>
+    </div>
+  </div>
+<%
+  else
+%>
+  <div class="doc-versions-container container-fluid">
+    <h2>
+      <%=@errMsg%>
+    </h2>
+  </div>
+<%
+  end
+%>

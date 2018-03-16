@@ -1,5 +1,5 @@
 <%# Currently future functionality:. %>
-<%# = render :partial => "upload" if User.current.allowed_to?(:edit_genboree_rawcontent_doc, @project) -%>
+<%# = render :partial => "upload" if @currRmUser.allowed_to?(:edit_genboree_rawcontent_doc, @project) -%>
 
 <!-- Embedded page -->
 <%= @content.html_safe if(@content) %>

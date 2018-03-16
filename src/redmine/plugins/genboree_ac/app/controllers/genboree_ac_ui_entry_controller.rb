@@ -56,14 +56,12 @@ class GenboreeAcUiEntryController < ApplicationController
   def show()
     addProjectIdToParams()
     @projectId = params['id']
-    @userPermsJS = pluginUserPerms(:genboree_ac, @project, User.current, :as => :javascript)
+    @userPermsJS = pluginUserPerms(:genboree_ac, @project, @currRmUser, :as => :javascript)
 
     # ------------------------------------------------------------------
     # TEMP. Dump some perm info from helper
     # ------------------------------------------------------------------
     pluginPerms = pluginPerms(:genboree_ac, :as => :symbol)
-    $stderr.debugPuts(__FILE__, __method__, "GENBOREE AC - DEBUG", "PLUGIN PERMISSIONS LIST:\n#{pluginPerms.join("\n")}\n\n")
-    $stderr.puts "DEBUG - #{__method__}() => PARAMS: #{params.inspect} "
     @genboreeAc = GenboreeAc.find_by_project_id(Project.find(params['project_id']))
     render :show
   rescue GenboreeAcUiEntryControllerError => e

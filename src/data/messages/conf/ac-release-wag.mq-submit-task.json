@@ -1,0 +1,20 @@
+{
+  "mqConf" : "/usr/local/brl/data/messages/conf/ac-release-wag.json",
+  "task" : {
+    "type" : "mq-submit",
+    "minMsgAgeSec" : 10,
+    "location" : "exchange.clinicalgenome.org:9093",
+    "topic" : "",
+    "clientConf" : "/usr/local/brl/data/messages/conf/ac-release-wag.client-ssl.no-jks.properties",
+    "archive" : {
+      "active": true,
+      "gzip": true,
+      "location": "/usr/local/brl/data/messages/archive/actionability/ac-release-wag"
+    }
+  },
+  "logs" : {
+    "stdout" : "/usr/local/brl/local/var/ac-release-wag.mq-submit-task.out",
+    "stderr" : "/usr/local/brl/local/var/ac-release-wag.mq-submit-task.err"
+  },
+  "lock" : "/usr/local/brl/local/var/ac-release-wag.mq-submit-task.lock"
+}

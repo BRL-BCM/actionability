@@ -1,0 +1,63 @@
+.docs-count-text-container {
+  margin-top: 10px ;
+  margin-bottom: 20px;
+}
+
+.docs-count-text-container span {
+  float: right ;
+}
+
+.docs-count-text-container a {
+  display: inline ;
+}
+
+#createNewModal .tag.label {
+  font-size: 85%;
+}
+
+.msg .doc-id {
+  font-weight: bold ;
+}
+
+.success-tag {
+  font-weight:  bold ;
+  margin-bottom: 10px ;
+}
+
+.open-curation-yes-no .btn-container {
+  margin-top: 10px ;
+}
+
+.row.value-row.new {
+  background-color: #ebffe0 ;
+}
+
+.docs-status-modal .modal-header {
+  background-color: #5fa2dd ;
+  color: #fff ;
+}
+
+.docs-status-modal .close {
+  color: #fff !important ;
+  opacity: 1.0 !important ;
+}
+
+.logout-btn-container {
+  margin-right: 10px;
+}
+
+.versions-panel .row.value-row:nth-child(odd) {
+  background-color: #f8f8fc;
+}
+
+.last-edited {
+  color: #0FA800;
+}
+
+.doc-versions-container .versions-panel .row.value-row:not(:last-child) {
+  border-bottom: 1px dashed lightgrey;
+}
+
+#errorModal .modal-body .error-code .name, #errorModal .modal-body .error-msg .name {
+  font-weight: bold ;
+}
